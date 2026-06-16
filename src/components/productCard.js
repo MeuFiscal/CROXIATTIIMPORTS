@@ -201,7 +201,7 @@ export function createProductCard(produto) {
 
     const modalId = `modal-qty-${produto.id}`;
 
-    openModal({
+    const { overlay } = openModal({
       title: produto.nome,
       maxWidth: '600px',
       body: `
@@ -219,7 +219,7 @@ export function createProductCard(produto) {
       `,
       footer: `
         <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-          ${!isDisabled ? `<div class="qty-control" id="${modalId}"><button class="qty-btn qty-minus" type="button">−</button><span class="qty-value">1</span><button class="qty-btn qty-plus" type="button">+</button></div>` : ''}
+          ${!isDisabled ? `<div class="qty-control" id="modal-qty-${produto.id}"><button class="qty-btn qty-minus" type="button">−</button><span class="qty-value">1</span><button class="qty-btn qty-plus" type="button">+</button></div>` : ''}
           <button class="btn btn-primary" id="modal-add-cart-${produto.id}" style="flex:1;" ${isDisabled ? 'disabled' : ''}>
             ${produto.apenas_encomenda ? '📦 Encomendar' : '🛒 Adicionar ao Carrinho'}
           </button>
@@ -227,13 +227,11 @@ export function createProductCard(produto) {
       `
     });
 
-    setTimeout(() => {
-      const modalRoot = document.querySelector('.modal-content');
-      if (!modalRoot) return;
-      // Re-select qty control inside modal footer
-      const addBtn = document.getElementById(`modal-add-cart-${produto.id}`);
-      wireQtyAndCart(modalRoot.closest('.modal-overlay') || document, produto, addBtn, true);
-    }, 50);
+    // Wire qty + add button directly using the overlay reference
+    if (!isDisabled) {
+      const addBtn = overlay.querySelector(`#modal-add-cart-${produto.id}`);
+      wireQtyAndCart(overlay, produto, addBtn, true);
+    }
   });
 
   return card;

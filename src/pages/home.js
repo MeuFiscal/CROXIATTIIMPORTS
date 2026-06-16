@@ -43,7 +43,7 @@ export async function renderHome(container) {
       </section>
 
       <!-- Vitrine Geral -->
-      <section class="home-section" style="padding-top: 20px;">
+      <section class="home-section container" style="padding-top: 20px;">
         <div class="home-section-header">
           <div>
             <div class="text-xs uppercase font-semibold" style="color: var(--gold); letter-spacing: 0.15em; margin-bottom: 4px;">Nossa Coleção</div>
