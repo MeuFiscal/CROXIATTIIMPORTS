@@ -15,10 +15,9 @@ export async function renderAdminOrders(container) {
       <div class="admin-table-wrap">
         <div class="admin-table-header">
           <div style="display:flex;gap:8px;flex-wrap:wrap" id="order-filters">
-            <button class="chip active" data-status="">Todos</button>
+            <button class="chip active" data-status="pendente|encomenda">Todos</button>
             <button class="chip" data-status="pendente">⏳ Pendentes</button>
-            <button class="chip" data-status="aceito">✅ Aceitos</button>
-            <button class="chip" data-status="entregue">🎉 Entregues</button>
+            <button class="chip" data-status="encomenda">📦 Encomendas Pendentes</button>
           </div>
           <input type="search" class="form-input" id="order-search" placeholder="Buscar cliente..." style="max-width:220px;padding:8px 14px;font-size:.85rem" />
         </div>
@@ -28,7 +27,7 @@ export async function renderAdminOrders(container) {
       </div>
     `;
 
-    let currentStatus = '';
+    let currentStatus = 'pendente|encomenda';
     let searchQ = '';
 
     const load = async () => {
@@ -39,10 +38,15 @@ export async function renderAdminOrders(container) {
         .from('pedidos')
         .select(`id, valor_total, status, created_at,
           clientes(nome, telefone, endereco),
-          pedido_itens(quantidade, valor_unitario, produtos(nome, imagem_url))`)
+          pedido_itens(id, quantidade, quantidade_encomenda, valor_unitario, produtos(nome, imagem_url))`)
         .order('created_at', { ascending: false });
 
-      if (currentStatus) q = q.eq('status', currentStatus);
+      // Show only pendente and encomenda in this tab (aceito goes to Entregar)
+      if (currentStatus === 'pendente|encomenda') {
+        q = q.in('status', ['pendente', 'encomenda']);
+      } else if (currentStatus) {
+        q = q.eq('status', currentStatus);
+      }
 
       const { data } = await q;
       let orders = data || [];

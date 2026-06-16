@@ -126,7 +126,6 @@ async function runSearch(query) {
     .from('produtos')
     .select('id,nome,marca,preco,imagem_url')
     .or(`nome.ilike.%${query}%,marca.ilike.%${query}%`)
-    .eq('ativo', true)
     .order('nome')
     .limit(8);
 
