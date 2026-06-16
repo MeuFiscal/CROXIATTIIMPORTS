@@ -41,38 +41,6 @@ export async function renderHome(container) {
             <button class="hero-btn-outline" id="hero-order-btn">FAZER ENCOMENDA &nbsp;›</button>
           </div>
         </div>
-
-        <!-- Feature bar -->
-        <div class="hero-features">
-          <div class="hero-feature">
-            <span class="hero-feature-icon">🏆</span>
-            <div>
-              <strong>PRODUTOS 100% ORIGINAIS</strong>
-              <span>Garantia de autenticidade</span>
-            </div>
-          </div>
-          <div class="hero-feature">
-            <span class="hero-feature-icon">💎</span>
-            <div>
-              <strong>QUALIDADE PREMIUM</strong>
-              <span>Selecionamos o melhor</span>
-            </div>
-          </div>
-          <div class="hero-feature">
-            <span class="hero-feature-icon">🔒</span>
-            <div>
-              <strong>COMPRA SEGURA</strong>
-              <span>Seus dados protegidos</span>
-            </div>
-          </div>
-          <div class="hero-feature">
-            <span class="hero-feature-icon">💬</span>
-            <div>
-              <strong>ATENDIMENTO PERSONALIZADO</strong>
-              <span>Fale conosco via WhatsApp</span>
-            </div>
-          </div>
-        </div>
       </section>
 
       <!-- Vitrine Geral -->
