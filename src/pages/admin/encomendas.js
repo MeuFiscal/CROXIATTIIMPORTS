@@ -131,17 +131,21 @@ export async function renderAdminEncomendas(container) {
 }
 
 async function updateStatus(id, status, reloadFn) {
-  confirmModal('Confirmar ação', `Marcar esta encomenda como comprada? Ela irá para a aba "Entregar" pronta para envio ao cliente.`, async () => {
-    try {
-      const { error } = await supabase.from('pedidos').update({ status }).eq('id', id);
-      if (error) throw error;
-      showToast('success', 'Pedido marcado como comprado!');
-      reloadFn();
-    } catch (err) {
-      showToast('error', 'Erro ao atualizar');
-      console.error(err);
-    }
+  const ok = await confirmModal({
+    title: 'Confirmar ação',
+    message: 'Marcar esta encomenda como comprada? Ela irá para a aba "Entregar" pronta para envio ao cliente.'
   });
+  if (!ok) return;
+
+  try {
+    const { error } = await supabase.from('pedidos').update({ status }).eq('id', id);
+    if (error) throw error;
+    showToast('Pedido marcado como comprado!', 'success');
+    reloadFn();
+  } catch (err) {
+    showToast('Erro ao atualizar', 'error');
+    console.error(err);
+  }
 }
 
 function formatPhone(p) {

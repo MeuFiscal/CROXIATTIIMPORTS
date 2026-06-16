@@ -132,17 +132,21 @@ export async function renderAdminEntregar(container) {
 }
 
 async function updateStatus(id, status, reloadFn) {
-  confirmModal('Finalizar Pedido', `Deseja marcar este pedido como entregue ao cliente?`, async () => {
-    try {
-      const { error } = await supabase.from('pedidos').update({ status }).eq('id', id);
-      if (error) throw error;
-      showToast('success', 'Pedido finalizado (Entregue)!');
-      reloadFn();
-    } catch (err) {
-      showToast('error', 'Erro ao atualizar');
-      console.error(err);
-    }
+  const ok = await confirmModal({
+    title: 'Finalizar Pedido',
+    message: 'Deseja marcar este pedido como entregue ao cliente?'
   });
+  if (!ok) return;
+
+  try {
+    const { error } = await supabase.from('pedidos').update({ status }).eq('id', id);
+    if (error) throw error;
+    showToast('Pedido finalizado (Entregue)!', 'success');
+    reloadFn();
+  } catch (err) {
+    showToast('Erro ao atualizar', 'error');
+    console.error(err);
+  }
 }
 
 function formatPhone(p) {
