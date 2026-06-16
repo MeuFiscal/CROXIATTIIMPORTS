@@ -21,7 +21,8 @@ export async function renderHome(container) {
         <div class="hero-dark-content">
           <!-- Crown logo monogram -->
           <div class="hero-crown">
-            <img src="/logo.png" alt="Croxiatti" style="height:64px;object-fit:contain;filter:drop-shadow(0 0 12px rgba(200,155,60,0.6));" />
+            <div class="hero-crown-glow"></div>
+            <img src="/logo.png" alt="Croxiatti" class="hero-crown-img" />
           </div>
 
           <p class="hero-dark-label">✦ IMPORTADOS EXCLUSIVOS</p>
