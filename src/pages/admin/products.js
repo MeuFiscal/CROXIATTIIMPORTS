@@ -335,9 +335,9 @@ async function showCropModal(src, onCrop) {
 
       const img = document.getElementById('crop-img');
       const cropper = new Cropper(img, {
-        aspectRatio: 1,
+        aspectRatio: NaN, // Livre, permite pegar a imagem inteira na proporção original
         viewMode: 1,
-        autoCropArea: 0.85,
+        autoCropArea: 1, // Seleciona a imagem inteira por padrão
         movable: true,
         zoomable: true,
         rotatable: false,
@@ -349,7 +349,7 @@ async function showCropModal(src, onCrop) {
       });
 
       document.getElementById('crop-confirm').addEventListener('click', () => {
-        const canvas = cropper.getCroppedCanvas({ width: 800, height: 800, imageSmoothingQuality: 'high' });
+        const canvas = cropper.getCroppedCanvas({ maxWidth: 1000, maxHeight: 1000, imageSmoothingQuality: 'high' });
         canvas.toBlob(blob => {
           const url = URL.createObjectURL(blob);
           onCrop(blob, url);
