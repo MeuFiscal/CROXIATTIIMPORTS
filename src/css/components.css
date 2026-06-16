@@ -302,7 +302,151 @@
 /* ======================================================
    HOME PAGE
    ====================================================== */
-.home-page { padding-top: 24px; }
+.home-page { padding-top: 0; }
+
+/* ---- Dark Luxury Hero ---- */
+.hero-banner-dark {
+  position: relative;
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 520px;
+  margin-bottom: 32px;
+}
+.hero-dark-bg {
+  position: absolute; inset: 0;
+  background: url('/hero-bg.png') center/cover no-repeat;
+  z-index: 0;
+}
+.hero-dark-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(
+    to right,
+    rgba(0,0,0,0.70) 0%,
+    rgba(0,0,0,0.40) 40%,
+    rgba(0,0,0,0.40) 60%,
+    rgba(0,0,0,0.70) 100%
+  );
+  z-index: 1;
+}
+.hero-dark-content {
+  position: relative; z-index: 2;
+  text-align: center;
+  padding: 52px 24px 32px;
+  display: flex; flex-direction: column; align-items: center;
+  max-width: 680px;
+}
+.hero-crown {
+  margin-bottom: 20px;
+}
+.hero-dark-label {
+  font-size: 0.78rem; font-weight: 600;
+  letter-spacing: 0.28em; text-transform: uppercase;
+  color: rgba(200,155,60,0.9);
+  margin-bottom: 14px;
+}
+.hero-dark-title {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.1;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 6px;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.6);
+}
+.hero-dark-title-gold {
+  color: var(--gold-light);
+  display: block;
+  font-size: clamp(1.6rem, 4.5vw, 2.8rem);
+}
+.hero-dark-sub {
+  font-size: 0.95rem;
+  color: rgba(255,255,255,0.75);
+  line-height: 1.7;
+  margin: 16px 0 28px;
+  max-width: 520px;
+}
+.hero-dark-actions {
+  display: flex; gap: 14px; flex-wrap: wrap; justify-content: center;
+}
+.hero-btn-solid {
+  padding: 13px 30px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  color: #fff;
+  font-size: 0.82rem; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  border-radius: var(--radius-full);
+  border: none; cursor: pointer;
+  transition: all var(--transition);
+  box-shadow: 0 4px 20px rgba(200,155,60,0.4);
+}
+.hero-btn-solid:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(200,155,60,0.55);
+}
+.hero-btn-outline {
+  padding: 13px 30px;
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  font-size: 0.82rem; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  border-radius: var(--radius-full);
+  border: 1.5px solid rgba(255,255,255,0.45);
+  cursor: pointer;
+  transition: all var(--transition);
+  backdrop-filter: blur(6px);
+}
+.hero-btn-outline:hover {
+  background: rgba(255,255,255,0.15);
+  border-color: var(--gold);
+  color: var(--gold-light);
+  transform: translateY(-2px);
+}
+/* Feature bar */
+.hero-features {
+  position: relative; z-index: 2;
+  width: 100%;
+  background: rgba(0,0,0,0.65);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid rgba(200,155,60,0.2);
+  display: flex; justify-content: center;
+  flex-wrap: wrap; gap: 0;
+  padding: 16px 20px;
+}
+.hero-feature {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 24px;
+  border-right: 1px solid rgba(255,255,255,0.1);
+  flex: 1; min-width: 180px; max-width: 260px;
+}
+.hero-feature:last-child { border-right: none; }
+.hero-feature-icon { font-size: 1.4rem; flex-shrink: 0; }
+.hero-feature div { display: flex; flex-direction: column; gap: 2px; }
+.hero-feature strong {
+  font-size: 0.72rem; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: #fff;
+}
+.hero-feature span { font-size: 0.7rem; color: rgba(255,255,255,0.5); }
+@media (max-width: 768px) {
+  .hero-banner-dark { min-height: 420px; }
+  .hero-dark-content { padding: 40px 16px 24px; }
+  .hero-feature { min-width: 140px; padding: 8px 14px; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.08); }
+  .hero-feature:last-child { border-bottom: none; }
+  .hero-features { flex-direction: column; align-items: center; }
+}
+@media (max-width: 480px) {
+  .hero-btn-solid, .hero-btn-outline { padding: 12px 20px; font-size: 0.75rem; }
+  .hero-dark-actions { gap: 10px; }
+}
+
+
 
 /* Hero Banner */
 .hero-banner {
