@@ -24,7 +24,7 @@ export async function renderHome(container) {
             <img src="/logo.png" alt="Croxiatti" class="hero-crown-img" />
           </div>
 
-          <p class="hero-dark-label">✦ IMPORTADOS EXCLUSIVOS</p>
+          <p class="hero-dark-label">✦ FRAGRÂNCIAS DE LUXO SELECIONADAS</p>
 
           <h1 class="hero-dark-title">
             SOFISTICAÇÃO QUE<br>
@@ -32,8 +32,7 @@ export async function renderHome(container) {
           </h1>
 
           <p class="hero-dark-sub">
-            Curadoria selecionada dos melhores produtos importados<br>
-            para quem valoriza qualidade e exclusividade.
+            Perfumes selecionados para pessoas que transformam<br>presença em assinatura.
           </p>
 
           <div class="hero-dark-actions">
