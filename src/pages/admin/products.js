@@ -219,19 +219,11 @@ function openProductForm(produto, onSave) {
   });
 
   function processImageFile(file) {
-    const reader = new FileReader();
-    reader.onload = async e => {
-      const src = e.target.result;
-      // Show inline crop UI
-      await showCropModal(src, (blob, url) => {
-        croppedBlob = blob;
-        previewUrl = url;
-        currentPreview.src = url;
-        previewWrap.style.display = '';
-        uploadArea.style.display = 'none';
-      });
-    };
-    reader.readAsDataURL(file);
+    croppedBlob = file;
+    previewUrl = URL.createObjectURL(file);
+    currentPreview.src = previewUrl;
+    previewWrap.style.display = '';
+    uploadArea.style.display = 'none';
   }
 
   // Save
@@ -255,10 +247,11 @@ function openProductForm(produto, onSave) {
 
     // Upload image if changed
     if (croppedBlob) {
-      const fileName = `produto_${Date.now()}.webp`;
+      const fileExt = croppedBlob.name.split('.').pop();
+      const fileName = `produto_${Date.now()}.${fileExt}`;
       const { data: upData, error: upErr } = await supabase.storage
         .from('produtos')
-        .upload(fileName, croppedBlob, { contentType: 'image/webp', upsert: false });
+        .upload(fileName, croppedBlob, { contentType: croppedBlob.type, upsert: false });
       if (upErr) {
         showToast('Erro no upload da imagem: ' + upErr.message, 'error');
         saveBtn.disabled = false;
