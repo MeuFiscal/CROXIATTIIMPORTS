@@ -17,41 +17,35 @@ export function renderHeader(app) {
   header.className = 'app-header';
   header.id = 'app-header';
   header.innerHTML = `
-    <div class="container header-inner">
-      <div class="header-logo" id="logo-home">
-        <img src="/logo.png" alt="Croxiatti Imports" style="height: 40px; object-fit: contain;" />
-      </div>
+    <div class="container header-inner" style="display: flex; flex-direction: column; gap: 12px; padding-top: 10px; padding-bottom: 10px;">
+      <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+        
+        <div style="flex: 1; display: flex; align-items: center;">
+          <a href="#/admin" class="text-sm font-medium" style="color: var(--gray-400); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--gray-400)'">Painel Admin</a>
+        </div>
+
+        <a href="#/" class="header-logo" id="logo-home" style="flex: 1; display: flex; justify-content: center; text-decoration: none;">
+          <img src="/logo.png" alt="Croxiatti Imports" style="height: 50px; object-fit: contain;" />
+        </a>
+
+        <div class="header-actions" style="flex: 1; display: flex; justify-content: flex-end; gap: 10px;">
+          <button class="header-btn" id="header-fav-btn" aria-label="Favoritos" title="Favoritos">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+          </button>
+          <button class="header-btn" id="header-cart-btn" aria-label="Carrinho" title="Carrinho">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+            <span class="btn-cart-count" id="cart-count-badge">0</span>
+          </button>
+        </div>
       </div>
 
-      <div class="header-search">
-        <span class="search-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-          </svg>
+      <div class="header-search" style="width: 100%; max-width: 600px; margin: 0 auto; position: relative;">
+        <span class="search-icon" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         </span>
-        <input type="search" id="header-search-input" placeholder="Buscar produtos, marcas..." autocomplete="off" />
-        <button class="search-clear" id="search-clear-btn" title="Limpar pesquisa">✕</button>
-        <div class="search-results" id="search-results-dropdown"></div>
-      </div>
-
-      <div class="header-actions">
-        <button class="header-btn" id="header-fav-btn" title="Favoritos" aria-label="Favoritos">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-          </svg>
-        </button>
-        <button class="header-btn" id="header-cart-btn" title="Carrinho" aria-label="Carrinho">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
-            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-          </svg>
-          <span class="btn-cart-count" id="cart-count-badge"></span>
-        </button>
-        <button class="crown-btn" id="admin-crown-btn" title="Acesso administrativo" aria-label="Admin">
-          <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
-            <path d="M2 19h20v2H2v-2zm2-3l3-8 4 5 3-7 3 8H4zm8-11a2 2 0 100-4 2 2 0 000 4z"/>
-          </svg>
-        </button>
+        <input type="search" id="header-search-input" placeholder="Buscar produtos, marcas..." autocomplete="off" style="width: 100%; padding: 8px 30px; box-sizing: border-box;" />
+        <button class="search-clear" id="search-clear-btn" title="Limpar pesquisa" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer;">✕</button>
+        <div class="search-results" id="search-results-dropdown" style="position: absolute; width: 100%; z-index: 100; background: white; border: 1px solid #ddd; display: none;"></div>
       </div>
     </div>
   `;

@@ -29,8 +29,8 @@
   --warning:     #C8842A;
   --info:        #3A6EA5;
 
-  --font-serif:  'Cormorant Garamond', Georgia, serif;
-  --font-sans:   'Inter', system-ui, -apple-system, sans-serif;
+  --font-serif:  'Montserrat', sans-serif;
+  --font-sans:   'Montserrat', sans-serif;
 
   --radius-sm:   6px;
   --radius-md:   12px;
@@ -59,9 +59,9 @@ html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 
 body {
   font-family: var(--font-sans);
-  font-size: 15px;
+  font-size: 14px;
   line-height: 1.6;
-  color: var(--black);
+  color: #393939;
   background: var(--off-white);
   min-height: 100dvh;
   overflow-x: hidden;

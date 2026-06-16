@@ -12,30 +12,30 @@ export async function renderHome(container) {
   const page = document.createElement('div');
   page.className = 'home-page';
   page.innerHTML = `
-    <div class="container">
-      <!-- Hero Banner -->
-      <section class="hero-banner" aria-label="Banner principal">
-        <div class="hero-gradient"></div>
-        <div class="hero-content">
-          <div class="hero-label">✦ Importados Exclusivos</div>
-          <h1 class="hero-title">Sofisticação que <strong>transcende fronteiras</strong></h1>
-          <p class="hero-subtitle">Curadoria selecionada dos melhores produtos importados para quem valoriza qualidade e exclusividade.</p>
-          <div class="hero-actions">
-            <button class="btn btn-primary btn-lg" id="hero-shop-btn">Explorar Vitrine</button>
-            <button class="btn btn-outline" style="border-color:rgba(255,255,255,0.3);color:white" id="hero-order-btn">Fazer Encomenda</button>
+    <div>
+      <!-- Hero Banner Edge-to-Edge -->
+      <section class="hero-banner" aria-label="Banner principal" style="position: relative; width: 100vw; margin-left: calc(-50vw + 50%); margin-bottom: 48px; background: var(--off-white); min-height: 400px; display: flex; align-items: center; justify-content: center; text-align: center; border-bottom: 1px solid var(--gray-200);">
+        <!-- Optional Background image if they have one, kept subtle -->
+        <div class="hero-bg" style="opacity: 0.15; filter: grayscale(100%);"></div>
+        <div class="hero-content" style="z-index: 1; padding: 40px 20px; max-width: 800px; display: flex; flex-direction: column; align-items: center;">
+          <div class="hero-label" style="color: var(--black); font-weight: 500; margin-bottom: 12px; letter-spacing: 0.2em;">✦ Importados Exclusivos</div>
+          <h1 class="hero-title" style="color: var(--black); font-weight: 400; margin-bottom: 24px; text-transform: uppercase; font-size: clamp(1.8rem, 4vw, 2.5rem); letter-spacing: 0.05em;">Sofisticação que <strong>transcende fronteiras</strong></h1>
+          <p class="hero-subtitle" style="color: var(--gray-600); margin-bottom: 32px; max-width: 600px;">Curadoria selecionada dos melhores produtos importados para quem valoriza qualidade e exclusividade.</p>
+          <div class="hero-actions" style="display: flex; gap: 16px; justify-content: center;">
+            <button class="btn btn-primary btn-lg" id="hero-shop-btn" style="min-width: 200px;">Explorar Vitrine</button>
+            <button class="btn btn-outline" style="border-color: var(--gray-400); color: var(--black); min-width: 200px;" id="hero-order-btn" onmouseover="this.style.borderColor='var(--gold)'; this.style.color='var(--gold)';" onmouseout="this.style.borderColor='var(--gray-400)'; this.style.color='var(--black)';">Fazer Encomenda</button>
           </div>
         </div>
-        <div class="hero-ornament">C</div>
       </section>
 
       <!-- Produtos em Destaque -->
       <section class="home-section" id="section-destaque">
-        <div class="home-section-header">
+        <div class="home-section-header" style="margin-bottom: 24px;">
           <div>
-            <div class="text-xs uppercase text-gold font-semibold" style="letter-spacing:.15em;margin-bottom:4px">Coleção Especial</div>
-            <h2 class="home-section-title">Produtos em Destaque</h2>
+            <div class="text-xs uppercase font-semibold" style="color: var(--gray-400); letter-spacing: 0.15em; margin-bottom: 8px;">Coleção Especial</div>
+            <h2 class="home-section-title" style="font-weight: 400; font-size: 1.8rem;">Produtos em Destaque</h2>
           </div>
-          <button class="view-all" id="view-all-destaque">
+          <button class="view-all" id="view-all-destaque" style="color: var(--gold); text-transform: uppercase; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em;">
             Ver todos
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           </button>
@@ -45,12 +45,12 @@ export async function renderHome(container) {
 
       <!-- Mais Encomendados -->
       <section class="home-section" id="section-top">
-        <div class="home-section-header">
+        <div class="home-section-header" style="margin-bottom: 24px;">
           <div>
-            <div class="text-xs uppercase text-gold font-semibold" style="letter-spacing:.15em;margin-bottom:4px">Ranking</div>
-            <h2 class="home-section-title">Mais Encomendados</h2>
+            <div class="text-xs uppercase font-semibold" style="color: var(--gray-400); letter-spacing: 0.15em; margin-bottom: 8px;">Ranking</div>
+            <h2 class="home-section-title" style="font-weight: 400; font-size: 1.8rem;">Mais Encomendados</h2>
           </div>
-          <button class="view-all" id="view-all-top">
+          <button class="view-all" id="view-all-top" style="color: var(--gold); text-transform: uppercase; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em;">
             Ver todos
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           </button>

@@ -187,18 +187,19 @@
 }
 
 .product-card {
-  background: var(--white);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  box-shadow: var(--shadow-sm);
-  transition: box-shadow var(--transition), transform var(--transition);
   position: relative;
+  background: var(--white);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
   display: flex; flex-direction: column;
-  cursor: pointer;
+  text-decoration: none;
+  transition: all var(--transition);
+  border: 1px solid var(--gray-200);
 }
 .product-card:hover {
-  box-shadow: var(--shadow-lg);
-  transform: translateY(-4px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  transform: translateY(-2px);
+  border-color: var(--gray-300);
 }
 
 .product-card-img-wrap {
