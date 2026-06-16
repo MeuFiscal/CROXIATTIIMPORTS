@@ -7,16 +7,22 @@ import { supabase } from '../supabase.js';
 
 let searchTimeout = null;
 let searchResultsEl = null;
-let headerRendered = false;
+let headerElement = null;
 
 export function renderHeader(app) {
-  if (headerRendered) return;
-  headerRendered = true;
+  if (document.getElementById('app-header')) {
+    if (headerElement && !app.contains(headerElement)) app.prepend(headerElement);
+    return;
+  }
+  if (headerElement && !app.contains(headerElement)) {
+    app.prepend(headerElement);
+    return;
+  }
 
-  const header = document.createElement('header');
-  header.className = 'app-header';
-  header.id = 'app-header';
-  header.innerHTML = `
+  headerElement = document.createElement('header');
+  headerElement.className = 'app-header';
+  headerElement.id = 'app-header';
+  headerElement.innerHTML = `
     <div class="container header-inner" style="display: flex; flex-direction: column; gap: 12px; padding-top: 10px; padding-bottom: 10px;">
       <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
         
@@ -25,7 +31,7 @@ export function renderHeader(app) {
         </div>
 
         <a href="#/" class="header-logo" id="logo-home" style="flex: 1; display: flex; justify-content: center; text-decoration: none;">
-          <img src="/logo.png" alt="Croxiatti Imports" style="height: 50px; object-fit: contain;" />
+          <img src="/logo.png" alt="Croxiatti Imports" style="height: 100px; object-fit: contain;" />
         </a>
 
         <div class="header-actions" style="flex: 1; display: flex; justify-content: flex-end; gap: 10px;">
@@ -50,13 +56,13 @@ export function renderHeader(app) {
     </div>
   `;
 
-  app.prepend(header);
+  app.prepend(headerElement);
 
   // Logo → home
-  header.querySelector('#logo-home').addEventListener('click', () => navigate('/'));
+  headerElement.querySelector('#logo-home').addEventListener('click', () => navigate('/'));
 
   // Cart count badge
-  const badge = header.querySelector('#cart-count-badge');
+  const badge = headerElement.querySelector('#cart-count-badge');
   const updateBadge = () => {
     const count = getCartCount();
     badge.textContent = count > 99 ? '99+' : count;
@@ -66,17 +72,17 @@ export function renderHeader(app) {
   on('cartChange', updateBadge);
 
   // Cart button
-  header.querySelector('#header-cart-btn').addEventListener('click', () => navigate('/cart'));
+  headerElement.querySelector('#header-cart-btn').addEventListener('click', () => navigate('/cart'));
 
   // Favorites button
-  header.querySelector('#header-fav-btn').addEventListener('click', () => navigate('/favorites'));
+  headerElement.querySelector('#header-fav-btn').addEventListener('click', () => navigate('/favorites'));
 
   // Admin crown was replaced by a normal a-href link, so no JS needed here.
 
   // Search
-  const searchInput = header.querySelector('#header-search-input');
-  const clearBtn = header.querySelector('#search-clear-btn');
-  searchResultsEl = header.querySelector('#search-results-dropdown');
+  const searchInput = headerElement.querySelector('#header-search-input');
+  const clearBtn = headerElement.querySelector('#search-clear-btn');
+  searchResultsEl = headerElement.querySelector('#search-results-dropdown');
 
   searchInput.addEventListener('input', e => {
     const val = e.target.value.trim();
@@ -102,7 +108,7 @@ export function renderHeader(app) {
   });
 
   document.addEventListener('click', e => {
-    if (!header.querySelector('.header-search').contains(e.target)) closeDropdown();
+    if (!headerElement.querySelector('.header-search').contains(e.target)) closeDropdown();
   });
 }
 

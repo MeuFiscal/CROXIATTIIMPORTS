@@ -5,6 +5,7 @@ import { addToCart, toggleFavorite, isFavorite } from '../store.js';
 import { showToast } from './toast.js';
 import { navigate } from '../router.js';
 import { showCartPopup } from '../pages/cart.js';
+import { openModal } from './modal.js';
 
 export function formatCurrency(value) {
   return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value || 0);
@@ -76,6 +77,43 @@ export function createProductCard(produto) {
     e.stopPropagation();
     addToCart(produto, 1);
     showCartPopup(produto);
+  });
+
+  // Open details modal
+  card.addEventListener('click', e => {
+    if (e.target.closest('.card-favorite') || e.target.closest('.btn-add-cart')) return;
+    
+    openModal({
+      title: produto.nome,
+      maxWidth: '600px',
+      body: `
+        <div style="display:flex;flex-direction:column;gap:20px;">
+          <div style="width:100%;text-align:center;background:#f5f5f5;border-radius:8px;padding:20px;">
+            <img src="${produto.imagem_url || ''}" alt="${produto.nome}" style="max-width:100%;max-height:400px;object-fit:contain;border-radius:4px;" />
+          </div>
+          <div>
+            ${produto.marca ? `<p style="color:var(--gray-500);font-size:0.9rem;text-transform:uppercase;margin-bottom:4px;">${produto.marca}</p>` : ''}
+            <h2 style="font-size:1.5rem;margin-bottom:8px;">${formatCurrency(produto.preco)}</h2>
+            ${stockText}
+            <div style="margin-top:16px;color:var(--gray-600);line-height:1.6;font-size:0.95rem;white-space:pre-wrap;">${produto.descricao || 'Nenhuma descrição disponível para este produto.'}</div>
+          </div>
+        </div>
+      `,
+      footer: `
+        <button class="btn btn-primary" id="modal-add-cart-${produto.id}" style="width:100%;" ${(!produto.apenas_encomenda && produto.quantidade <= 0) ? 'disabled' : ''}>
+          Adicionar ao Carrinho
+        </button>
+      `
+    });
+
+    const addBtn = document.getElementById(`modal-add-cart-${produto.id}`);
+    if (addBtn) {
+      addBtn.addEventListener('click', () => {
+        addToCart(produto, 1);
+        showCartPopup(produto);
+        // The modal stays open or we could close it, but let's just let them see the popup
+      });
+    }
   });
 
   return card;
