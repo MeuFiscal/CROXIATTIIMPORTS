@@ -23,26 +23,27 @@ export function renderHeader(app) {
   headerElement.className = 'app-header';
   headerElement.id = 'app-header';
   headerElement.innerHTML = `
-    <div class="container header-inner" style="display: flex; align-items: center; justify-content: space-between; height: 100%;">
+    <div class="container header-inner">
       
       <!-- Logo na Esquerda -->
-      <a href="#/" class="header-logo" id="logo-home" style="display: flex; align-items: center; text-decoration: none;">
-        <img src="/logo.png" alt="Croxiatti Imports" style="height: 65px; object-fit: contain;" />
+      <a href="#/" class="header-logo" id="logo-home">
+        <img src="/logo.png" alt="Croxiatti Imports" />
       </a>
 
       <!-- Busca no Centro -->
-      <div class="header-search" style="flex: 1; max-width: 500px; margin: 0 30px; position: relative;">
-        <span class="search-icon" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--gray-400);">
+      <div class="header-search">
+        <span class="search-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         </span>
-        <input type="search" id="header-search-input" placeholder="Buscar produtos, marcas..." autocomplete="off" style="width: 100%; padding: 10px 14px 10px 40px; border-radius: 30px; border: 1px solid var(--gray-200); background: var(--gray-50); transition: all 0.2s;" onfocus="this.style.background='#fff'; this.style.borderColor='var(--gold)';" onblur="this.style.background='var(--gray-50)'; this.style.borderColor='var(--gray-200)';" />
-        <button class="search-clear" id="search-clear-btn" title="Limpar pesquisa" style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; display: none; color: var(--gray-400);">✕</button>
-        <div class="search-results" id="search-results-dropdown" style="position: absolute; width: 100%; top: calc(100% + 8px); z-index: 100; background: white; border: 1px solid var(--gray-100); border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); display: none; overflow: hidden;"></div>
+        <input type="search" id="header-search-input" placeholder="Buscar produtos..." autocomplete="off" />
+        <button class="search-clear" id="search-clear-btn" title="Limpar pesquisa">✕</button>
+        <div class="search-results" id="search-results-dropdown"></div>
       </div>
 
       <!-- Ícones na Direita -->
-      <div class="header-actions" style="display: flex; align-items: center; gap: 12px;">
-        <a href="#/admin" class="text-sm font-medium" style="color: var(--gray-500); text-decoration: none; margin-right: 10px; transition: color 0.2s;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--gray-500)'">Painel Admin</a>
+      <div class="header-actions">
+        <a href="#/my-orders" class="header-nav-link hide-mobile" id="header-orders-btn">Meus Pedidos</a>
+        <a href="#/admin" class="header-nav-link hide-mobile">Painel Admin</a>
         
         <button class="header-btn" id="header-fav-btn" aria-label="Favoritos" title="Favoritos">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
@@ -76,7 +77,8 @@ export function renderHeader(app) {
   // Favorites button
   headerElement.querySelector('#header-fav-btn').addEventListener('click', () => navigate('/favorites'));
 
-  // Admin crown was replaced by a normal a-href link, so no JS needed here.
+  // Meus Pedidos button (desktop)
+  headerElement.querySelector('#header-orders-btn')?.addEventListener('click', (e) => { e.preventDefault(); navigate('/my-orders'); });
 
   // Search
   const searchInput = headerElement.querySelector('#header-search-input');
@@ -87,8 +89,8 @@ export function renderHeader(app) {
     const val = e.target.value.trim();
     clearBtn.classList.toggle('visible', val.length > 0);
     clearTimeout(searchTimeout);
-    if (val.length < 2) { closeDropdown(); return; }
-    searchTimeout = setTimeout(() => runSearch(val), 280);
+    if (val.length < 1) { closeDropdown(); return; }
+    searchTimeout = setTimeout(() => runSearch(val), 150);
   });
 
   searchInput.addEventListener('keydown', e => {
@@ -117,14 +119,16 @@ function closeDropdown() {
 
 async function runSearch(query) {
   if (!searchResultsEl) return;
-  searchResultsEl.innerHTML = '<div style="padding:16px;text-align:center;color:var(--gray-400);font-size:.85rem">Buscando...</div>';
+  searchResultsEl.innerHTML = '<div style="padding:12px 16px;text-align:center;color:var(--gray-400);font-size:.85rem">Buscando...</div>';
   searchResultsEl.classList.add('open');
 
   const { data } = await supabase
     .from('produtos')
     .select('id,nome,marca,preco,imagem_url')
-    .ilike('nome', `%${query}%`)
-    .limit(6);
+    .or(`nome.ilike.%${query}%,marca.ilike.%${query}%`)
+    .eq('ativo', true)
+    .order('nome')
+    .limit(8);
 
   if (!data || data.length === 0) {
     searchResultsEl.innerHTML = '<div style="padding:16px;text-align:center;color:var(--gray-400);font-size:.85rem">Nenhum produto encontrado</div>';
