@@ -27,7 +27,7 @@ function withShell(renderFn) {
     if (!contentEl) {
       contentEl = document.createElement('main');
       contentEl.id = 'page-content';
-      contentEl.style.cssText = 'min-height:calc(100dvh - var(--header-h) - var(--navbar-h));padding-bottom:24px';
+      contentEl.style.cssText = 'padding-bottom:24px';
       app.appendChild(contentEl);
     }
     contentEl.innerHTML = '';

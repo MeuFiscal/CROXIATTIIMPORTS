@@ -478,7 +478,7 @@ input[type="range"]::-webkit-slider-thumb {
 /* --- Responsive breakpoints helpers --- */
 @media (max-width: 768px) {
   .hide-mobile { display: none !important; }
-  body { padding-bottom: var(--navbar-h); }
+  body { padding-bottom: calc(var(--navbar-h) + env(safe-area-inset-bottom, 0px)); }
 }
 @media (min-width: 769px) {
   .hide-desktop { display: none !important; }
