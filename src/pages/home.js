@@ -21,7 +21,6 @@ export async function renderHome(container) {
         <div class="hero-dark-content">
           <!-- Crown logo monogram -->
           <div class="hero-crown">
-            <div class="hero-crown-glow"></div>
             <img src="/logo.png" alt="Croxiatti" class="hero-crown-img" />
           </div>
 
