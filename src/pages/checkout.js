@@ -120,9 +120,12 @@ export async function renderCheckout(container) {
       }
 
       // Criar pedido
+      const isEncomenda = cart.some(i => i.apenas_encomenda);
+      const initialStatus = isEncomenda ? 'encomenda' : 'pendente';
+
       const { data: pedido, error: pedErr } = await supabase
         .from('pedidos')
-        .insert({ cliente_id: cliente.id, valor_total: total, status: 'pendente' })
+        .insert({ cliente_id: cliente.id, valor_total: total, status: initialStatus })
         .select('id')
         .single();
       if (pedErr) throw pedErr;

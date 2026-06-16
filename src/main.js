@@ -67,6 +67,8 @@ const lazyAdminLogin     = () => import('./pages/admin/login.js').then(m => m.re
 const lazyAdminDash      = () => import('./pages/admin/dashboard.js').then(m => m.renderDashboard);
 const lazyAdminProducts  = () => import('./pages/admin/products.js').then(m => m.renderAdminProducts);
 const lazyAdminOrders    = () => import('./pages/admin/orders.js').then(m => m.renderAdminOrders);
+const lazyAdminEncomendas= () => import('./pages/admin/encomendas.js').then(m => m.renderAdminEncomendas);
+const lazyAdminEntregar  = () => import('./pages/admin/entregar.js').then(m => m.renderAdminEntregar);
 const lazyAdminCustomers = () => import('./pages/admin/customers.js').then(m => m.renderAdminCustomers);
 const lazyAdminReports   = () => import('./pages/admin/reports.js').then(m => m.renderAdminReports);
 
@@ -119,6 +121,16 @@ registerRoute('/admin/products', withAdminShell(async (el) => {
 
 registerRoute('/admin/orders', withAdminShell(async (el) => {
   const fn = await lazyAdminOrders();
+  return fn(el);
+}));
+
+registerRoute('/admin/encomendas', withAdminShell(async (el) => {
+  const fn = await lazyAdminEncomendas();
+  return fn(el);
+}));
+
+registerRoute('/admin/entregar', withAdminShell(async (el) => {
+  const fn = await lazyAdminEntregar();
   return fn(el);
 }));
 
