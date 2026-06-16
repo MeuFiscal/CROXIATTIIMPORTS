@@ -216,10 +216,10 @@ export async function renderAdminDestaques(container) {
           const ext = selectedFile.name.split('.').pop();
           const fileName = `banner_${Date.now()}.${ext}`;
           const { data: upData, error: upErr } = await supabase.storage
-            .from('banners')
+            .from('produtos')
             .upload(fileName, selectedFile, { contentType: selectedFile.type, upsert: false });
           if (upErr) throw upErr;
-          const { data: urlData } = supabase.storage.from('banners').getPublicUrl(upData.path);
+          const { data: urlData } = supabase.storage.from('produtos').getPublicUrl(upData.path);
           imgUrl = urlData.publicUrl;
         }
 
