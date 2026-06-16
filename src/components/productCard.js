@@ -5,10 +5,114 @@ import { addToCart, toggleFavorite, isFavorite } from '../store.js';
 import { showToast } from './toast.js';
 import { navigate } from '../router.js';
 import { showCartPopup } from '../pages/cart.js';
-import { openModal } from './modal.js';
+import { openModal, confirmModal } from './modal.js';
 
 export function formatCurrency(value) {
   return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value || 0);
+}
+
+// Helper: show popup when qty exceeds stock
+function askEncomendaPopup(produto, qtdSolicitada, estoque, onConfirm) {
+  const qtdEncomenda = qtdSolicitada - estoque;
+  const textoEstoque = estoque > 0
+    ? `Temos apenas <strong>${estoque} unidade${estoque > 1 ? 's' : ''} em estoque</strong>.`
+    : `Este produto não está em estoque no momento.`;
+
+  openModal({
+    title: '⚠️ Disponibilidade Limitada',
+    maxWidth: '440px',
+    body: `
+      <div style="line-height:1.7;color:var(--gray-700)">
+        <p>${textoEstoque}</p>
+        <p>As <strong>${qtdEncomenda} unidade${qtdEncomenda > 1 ? 's' : ''} restante${qtdEncomenda > 1 ? 's' : ''}</strong> serão processadas como <strong>Encomenda</strong> e chegam em prazo combinado.</p>
+        ${estoque > 0 ? `<p style="font-size:.85rem;color:var(--gray-500)">📦 ${estoque} imediato${estoque > 1 ? 's' : ''} + 🔖 ${qtdEncomenda} encomenda${qtdEncomenda > 1 ? 's' : ''}</p>` : ''}
+        <p>Deseja continuar assim?</p>
+      </div>
+    `,
+    footer: `
+      <div style="display:flex;gap:10px;justify-content:flex-end">
+        <button class="btn btn-outline" id="popup-cancel">Cancelar</button>
+        <button class="btn btn-primary" id="popup-confirm">Sim, adicionar à encomenda</button>
+      </div>
+    `
+  });
+
+  setTimeout(() => {
+    document.getElementById('popup-confirm')?.addEventListener('click', () => {
+      document.querySelector('.modal-overlay')?.remove();
+      onConfirm();
+    });
+    document.getElementById('popup-cancel')?.addEventListener('click', () => {
+      document.querySelector('.modal-overlay')?.remove();
+    });
+  }, 50);
+}
+
+// Helper: build qty selector HTML
+function qtyControlHtml(id, value = 1) {
+  return `
+    <div class="qty-control" id="qty-ctrl-${id}">
+      <button class="qty-btn qty-minus" type="button">−</button>
+      <span class="qty-value">1</span>
+      <button class="qty-btn qty-plus" type="button">+</button>
+    </div>
+  `;
+}
+
+// Helper: wire up quantity selector and add-to-cart with stock popup
+function wireQtyAndCart(root, produto, addBtn, isModal = false) {
+  const ctrl = root.querySelector('.qty-control');
+  if (!ctrl) return;
+
+  const minusBtn = ctrl.querySelector('.qty-minus');
+  const plusBtn = ctrl.querySelector('.qty-plus');
+  const qtyDisplay = ctrl.querySelector('.qty-value');
+  let qty = 1;
+
+  const estoqueDisponivel = produto.apenas_encomenda ? Infinity : (produto.quantidade || 0);
+
+  minusBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    if (qty > 1) { qty--; qtyDisplay.textContent = qty; }
+  });
+
+  plusBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    qty++;
+    qtyDisplay.textContent = qty;
+  });
+
+  if (addBtn) {
+    addBtn.addEventListener('click', e => {
+      e.stopPropagation();
+
+      // If product is encomenda-only: always add as encomenda
+      if (produto.apenas_encomenda) {
+        addToCart(produto, qty, 0, qty);
+        showCartPopup(produto);
+        if (isModal) document.querySelector('.modal-overlay')?.remove();
+        return;
+      }
+
+      // If qty exceeds available stock
+      if (qty > estoqueDisponivel) {
+        const qtdEstoque = Math.max(0, estoqueDisponivel);
+        const qtdEncomenda = qty - qtdEstoque;
+
+        askEncomendaPopup(produto, qty, qtdEstoque, () => {
+          addToCart(produto, qty, qtdEstoque, qtdEncomenda);
+          showCartPopup(produto);
+          if (isModal) document.querySelector('.modal-overlay')?.remove();
+        });
+        return;
+      }
+
+      // Normal add
+      addToCart(produto, qty, qty, 0);
+      showCartPopup(produto);
+      if (isModal) document.querySelector('.modal-overlay')?.remove();
+    });
+  }
 }
 
 export function createProductCard(produto) {
@@ -43,6 +147,8 @@ export function createProductCard(produto) {
     cardTitle = `<div style="background:#222;color:white;text-align:center;font-size:0.75rem;font-weight:700;letter-spacing:0.1em;padding:6px;text-transform:uppercase;">Mais Encomendado</div>`;
   }
 
+  const isDisabled = !produto.apenas_encomenda && produto.quantidade <= 0;
+
   card.innerHTML = `
     ${cardTitle}
     <div class="product-card-img-wrap">
@@ -61,12 +167,13 @@ export function createProductCard(produto) {
       ${stockText}
     </div>
     <div class="product-card-footer">
-      <button class="btn-add-cart" ${(!produto.apenas_encomenda && produto.quantidade <= 0) ? 'disabled style="opacity:.4;cursor:not-allowed"' : ''}>
+      ${!isDisabled ? qtyControlHtml(produto.id) : ''}
+      <button class="btn-add-cart" ${isDisabled ? 'disabled style="opacity:.4;cursor:not-allowed"' : ''}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
           <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
         </svg>
-        Adicionar ao Carrinho
+        ${produto.apenas_encomenda ? 'Encomendar' : 'Adicionar'}
       </button>
     </div>
   `;
@@ -82,17 +189,18 @@ export function createProductCard(produto) {
     showToast(added ? 'Adicionado aos favoritos' : 'Removido dos favoritos', added ? 'gold' : 'default');
   });
 
-  // Add to cart
-  card.querySelector('.btn-add-cart').addEventListener('click', e => {
-    e.stopPropagation();
-    addToCart(produto, 1);
-    showCartPopup(produto);
-  });
+  // Wire quantity + cart
+  if (!isDisabled) {
+    const addBtn = card.querySelector('.btn-add-cart');
+    wireQtyAndCart(card, produto, addBtn, false);
+  }
 
   // Open details modal
   card.addEventListener('click', e => {
-    if (e.target.closest('.card-favorite') || e.target.closest('.btn-add-cart')) return;
-    
+    if (e.target.closest('.card-favorite') || e.target.closest('.btn-add-cart') || e.target.closest('.qty-control')) return;
+
+    const modalId = `modal-qty-${produto.id}`;
+
     openModal({
       title: produto.nome,
       maxWidth: '600px',
@@ -110,20 +218,22 @@ export function createProductCard(produto) {
         </div>
       `,
       footer: `
-        <button class="btn btn-primary" id="modal-add-cart-${produto.id}" style="width:100%;" ${(!produto.apenas_encomenda && produto.quantidade <= 0) ? 'disabled' : ''}>
-          Adicionar ao Carrinho
-        </button>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          ${!isDisabled ? `<div class="qty-control" id="${modalId}"><button class="qty-btn qty-minus" type="button">−</button><span class="qty-value">1</span><button class="qty-btn qty-plus" type="button">+</button></div>` : ''}
+          <button class="btn btn-primary" id="modal-add-cart-${produto.id}" style="flex:1;" ${isDisabled ? 'disabled' : ''}>
+            ${produto.apenas_encomenda ? '📦 Encomendar' : '🛒 Adicionar ao Carrinho'}
+          </button>
+        </div>
       `
     });
 
-    const addBtn = document.getElementById(`modal-add-cart-${produto.id}`);
-    if (addBtn) {
-      addBtn.addEventListener('click', () => {
-        addToCart(produto, 1);
-        showCartPopup(produto);
-        // The modal stays open or we could close it, but let's just let them see the popup
-      });
-    }
+    setTimeout(() => {
+      const modalRoot = document.querySelector('.modal-content');
+      if (!modalRoot) return;
+      // Re-select qty control inside modal footer
+      const addBtn = document.getElementById(`modal-add-cart-${produto.id}`);
+      wireQtyAndCart(modalRoot.closest('.modal-overlay') || document, produto, addBtn, true);
+    }, 50);
   });
 
   return card;

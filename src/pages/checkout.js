@@ -119,9 +119,10 @@ export async function renderCheckout(container) {
         await supabase.from('clientes').update({ endereco: end }).eq('id', cliente.id);
       }
 
-      // Criar pedido
-      const isEncomenda = cart.some(i => i.apenas_encomenda);
-      const initialStatus = isEncomenda ? 'encomenda' : 'pendente';
+      // Criar pedido — detecta status com base nos itens
+      const hasEncomendaOnly = cart.every(i => i.apenas_encomenda || (i.qty_estoque === 0));
+      const hasMixed = cart.some(i => (i.qty_encomenda || 0) > 0) && cart.some(i => (i.qty_estoque || i.quantidade) > 0);
+      const initialStatus = hasEncomendaOnly ? 'encomenda' : 'pendente';
 
       const { data: pedido, error: pedErr } = await supabase
         .from('pedidos')
@@ -130,22 +131,24 @@ export async function renderCheckout(container) {
         .single();
       if (pedErr) throw pedErr;
 
-      // Inserir itens
+      // Inserir itens com quantidade_encomenda
       const itens = cart.map(item => ({
         pedido_id: pedido.id,
         produto_id: item.id,
         quantidade: item.quantidade,
+        quantidade_encomenda: item.qty_encomenda || (item.apenas_encomenda ? item.quantidade : 0),
         valor_unitario: item.preco
       }));
       const { error: itensErr } = await supabase.from('pedido_itens').insert(itens);
       if (itensErr) throw itensErr;
 
-      // Atualizar total_pedidos e estoque
+      // Atualizar total_pedidos e estoque (só desconta do estoque a qtd em estoque)
       for (const item of cart) {
         const { data: prod } = await supabase.from('produtos').select('total_pedidos,quantidade,apenas_encomenda').eq('id', item.id).single();
         if (prod) {
+          const qtdEstoque = item.qty_estoque !== undefined ? item.qty_estoque : (item.apenas_encomenda ? 0 : item.quantidade);
           const updates = { total_pedidos: (prod.total_pedidos || 0) + item.quantidade };
-          if (!prod.apenas_encomenda) updates.quantidade = Math.max(0, (prod.quantidade || 0) - item.quantidade);
+          if (!prod.apenas_encomenda && qtdEstoque > 0) updates.quantidade = Math.max(0, (prod.quantidade || 0) - qtdEstoque);
           await supabase.from('produtos').update(updates).eq('id', item.id);
         }
       }
@@ -165,10 +168,30 @@ export async function renderCheckout(container) {
 
 function renderSuccess(container, { nome, tel, total, cart }) {
   const rawTel = tel.replace(/\D/g, '');
+
+  // Montar lista de itens com split estoque x encomenda
+  const linhasItens = cart.map(i => {
+    const qtyEst = i.qty_estoque !== undefined ? i.qty_estoque : (i.apenas_encomenda ? 0 : i.quantidade);
+    const qtyEnc = i.qty_encomenda || (i.apenas_encomenda ? i.quantidade : 0);
+    let linha = `• ${i.nome}`;
+    if (qtyEst > 0 && qtyEnc > 0) {
+      linha += ` × ${i.quantidade} (${qtyEst} em estoque + ${qtyEnc} encomenda)`;
+    } else if (qtyEnc > 0) {
+      linha += ` × ${i.quantidade} 🔖 (encomenda)`;
+    } else {
+      linha += ` × ${i.quantidade}`;
+    }
+    linha += ` — ${formatCurrency(i.preco * i.quantidade)}`;
+    return linha;
+  });
+
+  const temEncomenda = cart.some(i => (i.qty_encomenda || 0) > 0 || i.apenas_encomenda);
   const whatsMsg = encodeURIComponent(
-    `Olá! Sou ${nome}.\n\nGostaria de confirmar minha encomenda na *Croxiatti Imports*:\n\n` +
-    cart.map(i => `• ${i.nome} × ${i.quantidade} — ${formatCurrency(i.preco * i.quantidade)}`).join('\n') +
-    `\n\n*Total: ${formatCurrency(total)}*\n\nAguardo a confirmação. 🙏`
+    `Olá! Sou ${nome}.\n\nGostaria de confirmar meu pedido na *Croxiatti Imports*:\n\n` +
+    linhasItens.join('\n') +
+    `\n\n*Total: ${formatCurrency(total)}*` +
+    (temEncomenda ? `\n\n⚠️ _Alguns itens são por encomenda — aguardo prazo de entrega._` : '') +
+    `\n\nAguardo a confirmação. 🙏`
   );
   const whatsUrl = `https://wa.me/5544998766259?text=${whatsMsg}`;
 

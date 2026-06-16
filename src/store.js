@@ -27,13 +27,24 @@ function saveCart(cart) {
 
 export function getCart() { return loadCart(); }
 
-export function addToCart(produto, quantidade = 1) {
+export function addToCart(produto, quantidade = 1, qtyEstoque = null, qtyEncomenda = 0) {
   const cart = loadCart();
   const idx = cart.findIndex(i => i.id === produto.id);
+  // Use explicit split if provided, otherwise derive from stock
+  const estoqueQty = qtyEstoque !== null ? qtyEstoque : quantidade;
+  const encomendaQty = qtyEncomenda;
+
   if (idx >= 0) {
     cart[idx].quantidade += quantidade;
+    cart[idx].qty_estoque = (cart[idx].qty_estoque || cart[idx].quantidade - encomendaQty) + estoqueQty;
+    cart[idx].qty_encomenda = (cart[idx].qty_encomenda || 0) + encomendaQty;
   } else {
-    cart.push({ ...produto, quantidade });
+    cart.push({
+      ...produto,
+      quantidade,
+      qty_estoque: estoqueQty,
+      qty_encomenda: encomendaQty
+    });
   }
   saveCart(cart);
 }
