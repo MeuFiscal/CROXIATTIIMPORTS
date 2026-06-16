@@ -71,8 +71,7 @@ export function renderHeader(app) {
   // Favorites button
   header.querySelector('#header-fav-btn').addEventListener('click', () => navigate('/favorites'));
 
-  // Admin crown
-  header.querySelector('#admin-crown-btn').addEventListener('click', () => navigate('/admin'));
+  // Admin crown was replaced by a normal a-href link, so no JS needed here.
 
   // Search
   const searchInput = header.querySelector('#header-search-input');
