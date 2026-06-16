@@ -34,11 +34,21 @@ export function createProductCard(produto) {
         ? `<span class="card-stock low">Últimas ${produto.quantidade} unidades</span>`
         : `<span class="card-stock">${produto.quantidade} disponíveis</span>`;
 
+  let cardTitle = '';
+  if (produto.destaque) {
+    card.style.border = '2px solid var(--gold)';
+    cardTitle = `<div style="background:var(--gold);color:white;text-align:center;font-size:0.75rem;font-weight:700;letter-spacing:0.1em;padding:6px;text-transform:uppercase;">Destaque</div>`;
+  } else if (produto.apenas_encomenda) {
+    card.style.border = '2px solid #222';
+    cardTitle = `<div style="background:#222;color:white;text-align:center;font-size:0.75rem;font-weight:700;letter-spacing:0.1em;padding:6px;text-transform:uppercase;">Mais Encomendado</div>`;
+  }
+
   card.innerHTML = `
+    ${cardTitle}
     <div class="product-card-img-wrap">
       ${imgHtml}
-      <div class="card-badges">${badgesHtml}</div>
-      <button class="card-favorite ${fav ? 'active' : ''}" title="Favoritar" aria-label="Favoritar produto">
+      <div class="card-badges" style="top: ${cardTitle ? '40px' : '10px'}">${badgesHtml}</div>
+      <button class="card-favorite ${fav ? 'active' : ''}" title="Favoritar" aria-label="Favoritar produto" style="top: ${cardTitle ? '40px' : '10px'}">
         <svg viewBox="0 0 24 24" fill="${fav ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
           <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
         </svg>

@@ -27,41 +27,11 @@ export async function renderHome(container) {
         </div>
       </section>
 
-      <!-- Produtos em Destaque -->
-      <section class="home-section" id="section-destaque">
-        <div class="home-section-header" style="margin-bottom: 24px;">
-          <div>
-            <div class="text-xs uppercase font-semibold" style="color: var(--gray-400); letter-spacing: 0.15em; margin-bottom: 8px;">Coleção Especial</div>
-            <h2 class="home-section-title" style="font-weight: 400; font-size: 1.8rem;">Produtos em Destaque</h2>
-          </div>
-          <button class="view-all" id="view-all-destaque" style="color: var(--gold); text-transform: uppercase; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em;">
-            Ver todos
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-          </button>
-        </div>
-        <div id="destaque-grid" class="featured-scroll"></div>
-      </section>
-
-      <!-- Mais Encomendados -->
-      <section class="home-section" id="section-top">
-        <div class="home-section-header" style="margin-bottom: 24px;">
-          <div>
-            <div class="text-xs uppercase font-semibold" style="color: var(--gray-400); letter-spacing: 0.15em; margin-bottom: 8px;">Ranking</div>
-            <h2 class="home-section-title" style="font-weight: 400; font-size: 1.8rem;">Mais Encomendados</h2>
-          </div>
-          <button class="view-all" id="view-all-top" style="color: var(--gold); text-transform: uppercase; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em;">
-            Ver todos
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-          </button>
-        </div>
-        <div id="top-grid" class="product-grid"></div>
-      </section>
-
       <!-- Vitrine Geral -->
-      <section class="home-section">
+      <section class="home-section" style="padding-top: 20px;">
         <div class="home-section-header">
           <div>
-            <div class="text-xs uppercase text-gold font-semibold" style="letter-spacing:.15em;margin-bottom:4px">Nossa Coleção</div>
+            <div class="text-xs uppercase font-semibold" style="color: var(--gold); letter-spacing: 0.15em; margin-bottom: 4px;">Nossa Coleção</div>
             <h2 class="home-section-title">Vitrine Completa</h2>
           </div>
           <div id="vitrine-count" class="text-sm text-muted"></div>
@@ -76,61 +46,15 @@ export async function renderHome(container) {
 
   // Events
   page.querySelector('#hero-shop-btn').addEventListener('click', () => {
-    document.getElementById('section-destaque')?.scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('vitrine-grid')?.scrollIntoView({ behavior: 'smooth' });
   });
   page.querySelector('#hero-order-btn').addEventListener('click', () => navigate('/search?filter=encomenda'));
-  page.querySelector('#view-all-destaque').addEventListener('click', () => navigate('/search?filter=destaque'));
-  page.querySelector('#view-all-top').addEventListener('click', () => navigate('/search?sort=top'));
 
   // Load data
-  await Promise.all([loadDestaque(), loadTop(), loadVitrine()]);
+  await loadVitrine();
 }
 
-async function loadDestaque() {
-  const grid = document.getElementById('destaque-grid');
-  if (!grid) return;
 
-  grid.appendChild(createSkeletonCards(4));
-
-  const { data } = await supabase
-    .from('produtos')
-    .select('*')
-    .eq('destaque', true)
-    .order('total_pedidos', { ascending: false })
-    .limit(8);
-
-  grid.innerHTML = '';
-
-  if (!data || data.length === 0) {
-    grid.innerHTML = '<p style="color:var(--gray-400);font-size:.9rem;padding:16px 0">Nenhum produto em destaque ainda.</p>';
-    return;
-  }
-
-  data.forEach(p => grid.appendChild(createProductCard(p)));
-}
-
-async function loadTop() {
-  const grid = document.getElementById('top-grid');
-  if (!grid) return;
-
-  grid.appendChild(createSkeletonCards(4));
-
-  const { data } = await supabase
-    .from('produtos')
-    .select('*')
-    .gt('total_pedidos', 0)
-    .order('total_pedidos', { ascending: false })
-    .limit(8);
-
-  grid.innerHTML = '';
-
-  if (!data || data.length === 0) {
-    grid.innerHTML = '<p style="color:var(--gray-400);font-size:.9rem;padding:16px 0">Os mais encomendados aparecerão aqui.</p>';
-    return;
-  }
-
-  data.forEach(p => grid.appendChild(createProductCard(p)));
-}
 
 let vitrineOffset = 0;
 const PAGE_SIZE = 12;
@@ -149,6 +73,8 @@ async function loadVitrine(append = false) {
   const { data, count } = await supabase
     .from('produtos')
     .select('*', { count: 'exact' })
+    .order('destaque', { ascending: false })
+    .order('apenas_encomenda', { ascending: false })
     .order('created_at', { ascending: false })
     .range(vitrineOffset, vitrineOffset + PAGE_SIZE - 1);
 
