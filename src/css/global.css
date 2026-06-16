@@ -47,7 +47,7 @@
   --transition:  0.25s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-slow: 0.45s cubic-bezier(0.4, 0, 0.2, 1);
 
-  --header-h:    70px;
+  --header-h:    90px;
   --navbar-h:    68px;
   --sidebar-w:   260px;
 }

@@ -33,8 +33,10 @@ export function renderAdminLayout(container, title, renderContent) {
       <aside class="admin-sidebar" id="admin-sidebar">
         <div class="sidebar-header">
           <div class="sidebar-logo">
-            <img src="/logo.png" alt="Croxiatti Imports" style="height: 40px; object-fit: contain; margin-bottom: 8px;" />
-            <span style="font-size: 0.8rem; opacity: 0.7;">Painel Administrativo</span>
+            <div style="background: white; padding: 12px 10px; border-radius: 8px; text-align: center; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+              <img src="/logo.png" alt="Croxiatti Imports" style="height: 45px; object-fit: contain;" />
+            </div>
+            <span style="font-size: 0.75rem; letter-spacing: 0.1em; text-align: center; color: rgba(255,255,255,0.6);">PAINEL ADMINISTRATIVO</span>
           </div>
         </div>
         <nav class="sidebar-nav">
@@ -115,13 +117,19 @@ export function renderAdminLayout(container, title, renderContent) {
   loadPendingCount();
 
   // Real-time subscription for new orders
+  if (window._adminOrderSub) {
+    supabase.removeChannel(window._adminOrderSub);
+  }
+  
   const sub = supabase
-    .channel('pedidos-realtime')
+    .channel('pedidos-realtime-' + Date.now())
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'pedidos' }, () => {
       loadPendingCount();
       showNewOrderAlert();
     })
     .subscribe();
+    
+  window._adminOrderSub = sub;
 
   // Render content
   const contentEl = container.querySelector('#admin-content');

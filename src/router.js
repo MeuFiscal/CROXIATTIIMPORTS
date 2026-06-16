@@ -41,7 +41,14 @@ function handleRoute() {
   if (!handler) handler = routes['*'] || routes['/'];
 
   const result = handler(path);
-  if (result && typeof result.cleanup === 'function') {
+  
+  if (result instanceof Promise) {
+    result.then(res => {
+      if (res && typeof res.cleanup === 'function') {
+        currentCleanup = res.cleanup;
+      }
+    }).catch(console.error);
+  } else if (result && typeof result.cleanup === 'function') {
     currentCleanup = result.cleanup;
   }
 }
