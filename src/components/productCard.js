@@ -99,7 +99,7 @@ export function createProductCard(produto) {
       body: `
         <div style="display:flex;flex-direction:column;gap:20px;">
           <div style="width:100%;text-align:center;background:#f5f5f5;border-radius:8px;padding:20px;">
-            <img src="${produto.imagem_url || ''}" alt="${produto.nome}" style="max-width:100%;max-height:400px;object-fit:contain;border-radius:4px;" />
+            <img src="${produto.imagem_url || ''}" alt="${produto.nome}" style="max-width:100%;max-height:40vh;object-fit:contain;border-radius:4px;" />
           </div>
           <div>
             ${produto.marca ? `<p style="color:var(--gray-500);font-size:0.9rem;text-transform:uppercase;margin-bottom:4px;">${produto.marca}</p>` : ''}
