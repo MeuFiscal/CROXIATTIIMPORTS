@@ -528,6 +528,38 @@
   .hero-banner { min-height: 300px; }
 }
 
+/* ---- Promo Banners ---- */
+.promo-banners-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px 20px 0;
+  max-width: 1320px;
+  margin: 0 auto;
+}
+.promo-banner-item {
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  line-height: 0;
+}
+.promo-banner-img {
+  width: 100%;
+  height: auto;
+  max-height: 320px;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+.promo-banner-item:hover .promo-banner-img {
+  transform: scale(1.01);
+}
+@media (max-width: 768px) {
+  .promo-banners-section { padding: 12px 12px 0; gap: 12px; }
+  .promo-banner-img { max-height: 180px; }
+}
+
 /* Section */
 .home-section { margin-bottom: 56px; }
 .home-section-header {

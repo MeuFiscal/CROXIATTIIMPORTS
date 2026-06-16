@@ -42,6 +42,9 @@ export async function renderHome(container) {
         </div>
       </section>
 
+      <!-- Promo Banners (gerenciados pelo admin) -->
+      <div id="promo-banners-wrap"></div>
+
       <!-- Vitrine Geral -->
       <section class="home-section container" style="padding-top: 20px;">
         <div class="home-section-header">
@@ -65,8 +68,39 @@ export async function renderHome(container) {
   });
   page.querySelector('#hero-order-btn').addEventListener('click', () => navigate('/search?filter=encomenda'));
 
+  // Load promo banners
+  loadPromoBanners();
+
   // Load data
   await loadVitrine();
+}
+
+async function loadPromoBanners() {
+  const wrap = document.getElementById('promo-banners-wrap');
+  if (!wrap) return;
+
+  const { data } = await supabase
+    .from('banners')
+    .select('*')
+    .eq('ativo', true)
+    .order('created_at', { ascending: false });
+
+  if (!data || data.length === 0) { wrap.innerHTML = ''; return; }
+
+  wrap.innerHTML = `
+    <section class="promo-banners-section" aria-label="Banners promocionais">
+      ${data.map(b => `
+        <div class="promo-banner-item">
+          <img
+            src="${b.imagem_url}"
+            alt="${b.titulo || 'Promoção Croxiatti Imports'}"
+            class="promo-banner-img"
+            loading="lazy"
+          />
+        </div>
+      `).join('')}
+    </section>
+  `;
 }
 
 

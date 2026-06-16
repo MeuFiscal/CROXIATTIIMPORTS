@@ -71,6 +71,7 @@ const lazyAdminEncomendas= () => import('./pages/admin/encomendas.js').then(m =>
 const lazyAdminEntregar  = () => import('./pages/admin/entregar.js').then(m => m.renderAdminEntregar);
 const lazyAdminCustomers = () => import('./pages/admin/customers.js').then(m => m.renderAdminCustomers);
 const lazyAdminReports   = () => import('./pages/admin/reports.js').then(m => m.renderAdminReports);
+const lazyAdminDestaques = () => import('./pages/admin/destaques.js').then(m => m.renderAdminDestaques);
 
 // ---- Register customer routes ----
 registerRoute('/', withShell(async (el) => {
@@ -141,6 +142,11 @@ registerRoute('/admin/customers', withAdminShell(async (el) => {
 
 registerRoute('/admin/reports', withAdminShell(async (el) => {
   const fn = await lazyAdminReports();
+  return fn(el);
+}));
+
+registerRoute('/admin/destaques', withAdminShell(async (el) => {
+  const fn = await lazyAdminDestaques();
   return fn(el);
 }));
 
