@@ -39,7 +39,7 @@ export async function renderAdminOrders(container) {
         .from('pedidos')
         .select(`id, valor_total, status, created_at,
           clientes(nome, telefone, endereco),
-          pedido_itens(quantidade, valor_unitario, produtos(nome))`)
+          pedido_itens(quantidade, valor_unitario, produtos(nome, imagem_url))`)
         .order('created_at', { ascending: false });
 
       if (currentStatus) q = q.eq('status', currentStatus);
@@ -58,6 +58,19 @@ export async function renderAdminOrders(container) {
 
       const statusLabel = { pendente: '⏳ Pendente', aceito: '✅ Aceito', entregue: '🎉 Entregue' };
       const statusCls = { pendente: 'badge-warning', aceito: 'badge-info', entregue: 'badge-success' };
+
+      // Define global helper for opening product image modal if it doesn't exist
+      if (!window.viewOrderProduct) {
+        window.viewOrderProduct = (imgUrl, name) => {
+          import('../../components/modal.js').then(({ openModal }) => {
+            openModal({
+              title: name,
+              body: `<div style="text-align:center;background:#f9f9f9;padding:20px;border-radius:8px;"><img src="${imgUrl}" style="max-width:100%;max-height:50vh;object-fit:contain;border-radius:8px;" onerror="this.src='/logo.png'"/></div>`,
+              maxWidth: '500px'
+            });
+          });
+        };
+      }
 
       wrap.innerHTML = `
         <div style="overflow-x:auto">
@@ -82,8 +95,13 @@ export async function renderAdminOrders(container) {
                     <div class="text-xs text-muted">${o.clientes?.telefone ? formatPhone(o.clientes.telefone) : ''}</div>
                   </td>
                   <td>
-                    <div style="font-size:.82rem;color:var(--gray-600);max-width:220px">
-                      ${(o.pedido_itens || []).map(it => `${it.produtos?.nome} × ${it.quantidade}`).join(', ')}
+                    <div style="display:flex;gap:10px;flex-wrap:wrap;max-width:260px;padding:4px 0;">
+                      ${(o.pedido_itens || []).map(it => `
+                        <div class="order-product-thumb" style="width:44px;height:44px;border-radius:6px;border:1px solid var(--gray-200);cursor:pointer;background:#fff;position:relative;transition:transform 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.05);" title="${it.produtos?.nome} (${it.quantidade}x)" onmouseover="this.style.transform='scale(1.05)';this.style.borderColor='var(--gold)';" onmouseout="this.style.transform='scale(1)';this.style.borderColor='var(--gray-200)';" onclick="window.viewOrderProduct('${it.produtos?.imagem_url}', '${it.produtos?.nome?.replace(/'/g, "\\'")}')">
+                          <img src="${it.produtos?.imagem_url || ''}" style="width:100%;height:100%;object-fit:contain;border-radius:5px;padding:2px;" onerror="this.src='/logo.png'" />
+                          <span style="position:absolute;bottom:-6px;right:-6px;background:var(--gold);color:white;font-size:0.65rem;min-width:18px;height:18px;display:flex;align-items:center;justify-content:center;border-radius:9px;font-weight:bold;box-shadow:0 2px 4px rgba(0,0,0,0.2);">${it.quantidade}</span>
+                        </div>
+                      `).join('')}
                     </div>
                   </td>
                   <td><strong>${formatCurrency(o.valor_total)}</strong></td>

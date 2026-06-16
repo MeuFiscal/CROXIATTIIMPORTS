@@ -4,6 +4,7 @@
 import { navigate, getParams } from '../../router.js';
 import { signOutAdmin, getAdminSession } from '../../supabase.js';
 import { supabase } from '../../supabase.js';
+import { openModal } from '../../components/modal.js';
 
 const NAV = [
   { path: '/admin/dashboard', label: 'Dashboard', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>` },
@@ -112,6 +113,38 @@ export function renderAdminLayout(container, title, renderContent) {
     document.body.style.padding = '';
     navigate('/admin');
   });
+
+  const notifBtn = container.querySelector('#notif-btn');
+  if (notifBtn) {
+    notifBtn.addEventListener('click', async () => {
+      const { data } = await supabase.from('pedidos').select('id, created_at, clientes(nome)').eq('status', 'pendente').order('created_at', { ascending: false }).limit(10);
+      
+      let html = '';
+      if (!data || data.length === 0) {
+        html = '<p style="color:var(--gray-500);text-align:center;padding:20px;">Nenhum pedido pendente.</p>';
+      } else {
+        html = '<div style="display:flex;flex-direction:column;gap:12px;">';
+        data.forEach(p => {
+          html += `
+            <div style="padding:12px;border:1px solid var(--gray-100);border-radius:8px;display:flex;justify-content:space-between;align-items:center;background:var(--gray-50);cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--gold)';" onmouseout="this.style.borderColor='var(--gray-100)';" onclick="document.querySelector('.modal-close').click(); window.location.hash='#/admin/orders';">
+              <div>
+                <strong style="display:block;font-size:0.95rem;color:var(--black);">${p.clientes?.nome || 'Desconhecido'}</strong>
+                <span style="font-size:0.8rem;color:var(--gray-400);">Pedido #${p.id.slice(0,8).toUpperCase()}</span>
+              </div>
+              <span class="badge badge-warning" style="font-size:0.7rem;">Pendente</span>
+            </div>
+          `;
+        });
+        html += '</div>';
+      }
+
+      openModal({
+        title: 'Pedidos Pendentes',
+        body: html,
+        maxWidth: '400px'
+      });
+    });
+  }
 
   // Load pending orders count
   loadPendingCount();
