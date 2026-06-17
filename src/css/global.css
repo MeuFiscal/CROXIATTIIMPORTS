@@ -235,7 +235,7 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); }
   border: 1.5px solid var(--gray-200);
   background: var(--white); color: var(--black);
   transition: border-color var(--transition), box-shadow var(--transition);
-  font-size: 0.95rem;
+  font-size: 16px;
 }
 .form-input:focus {
   outline: none; border-color: var(--gold);
