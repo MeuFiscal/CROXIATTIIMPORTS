@@ -226,7 +226,13 @@ export function createProductCard(produto) {
       body: `
         <div style="display:flex;flex-direction:column;gap:20px;">
           <div style="width:100%;text-align:center;background:#f5f5f5;border-radius:8px;padding:20px;">
-            <img id="modal-main-img-${produto.id}" src="${mainImg}" alt="${produto.nome}" style="max-width:100%;max-height:40vh;object-fit:contain;border-radius:4px;transition:opacity 0.2s;" />
+            <div style="position:relative;display:inline-block;max-width:100%;">
+              ${images.length > 1 ? `
+                <button class="modal-gallery-prev" style="position:absolute;left:-10px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.7);border:none;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 5px rgba(0,0,0,0.1);z-index:10;color:var(--gray-700);backdrop-filter:blur(4px);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg></button>
+                <button class="modal-gallery-next" style="position:absolute;right:-10px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.7);border:none;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 5px rgba(0,0,0,0.1);z-index:10;color:var(--gray-700);backdrop-filter:blur(4px);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
+              ` : ''}
+              <img id="modal-main-img-${produto.id}" src="${mainImg}" alt="${produto.nome}" style="max-width:100%;max-height:40vh;object-fit:contain;border-radius:4px;transition:opacity 0.2s;" />
+            </div>
             ${galleryHtml}
           </div>
           <div>
@@ -253,21 +259,36 @@ export function createProductCard(produto) {
       wireQtyAndCart(overlay, produto, addBtn, true);
     }
 
-    // Wire gallery thumbnails
+    // Wire gallery thumbnails and arrows
     if (images.length > 1) {
       const thumbs = overlay.querySelectorAll('.modal-gallery-thumb');
       const mainImgEl = overlay.querySelector(`#modal-main-img-${produto.id}`);
-      thumbs.forEach(t => {
-        t.addEventListener('click', () => {
-          mainImgEl.style.opacity = '0.5';
-          setTimeout(() => {
-            mainImgEl.src = t.dataset.src;
-            mainImgEl.style.opacity = '1';
-          }, 150);
-          thumbs.forEach(th => th.style.borderColor = 'transparent');
-          t.style.borderColor = 'var(--gold)';
+      let currentIndex = 0;
+
+      const updateImage = (index) => {
+        if (index < 0) index = images.length - 1;
+        if (index >= images.length) index = 0;
+        currentIndex = index;
+
+        mainImgEl.style.opacity = '0.5';
+        setTimeout(() => {
+          mainImgEl.src = images[currentIndex];
+          mainImgEl.style.opacity = '1';
+        }, 150);
+
+        thumbs.forEach((th, idx) => {
+          th.style.borderColor = idx === currentIndex ? 'var(--gold)' : 'transparent';
         });
+      };
+
+      thumbs.forEach((t, idx) => {
+        t.addEventListener('click', () => updateImage(idx));
       });
+
+      const prevBtn = overlay.querySelector('.modal-gallery-prev');
+      const nextBtn = overlay.querySelector('.modal-gallery-next');
+      if (prevBtn) prevBtn.addEventListener('click', () => updateImage(currentIndex - 1));
+      if (nextBtn) nextBtn.addEventListener('click', () => updateImage(currentIndex + 1));
     }
   });
 
