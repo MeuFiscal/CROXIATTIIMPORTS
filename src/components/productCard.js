@@ -123,9 +123,20 @@ export function createProductCard(produto) {
   card.className = 'product-card';
   card.dataset.id = produto.id;
 
-  const imgHtml = produto.imagem_url
-    ? `<img class="product-card-img" src="${produto.imagem_url}" alt="${produto.nome}" loading="lazy" />`
+  const images = [produto.imagem_url, produto.imagem_url_2, produto.imagem_url_3].filter(Boolean);
+  let currentIndex = 0;
+
+  const imgHtml = images.length > 0
+    ? `<img class="product-card-img" src="${images[0]}" alt="${produto.nome}" loading="lazy" style="transition:opacity 0.2s;" />`
     : `<div class="product-card-placeholder">✦</div>`;
+
+  let galleryArrowsHtml = '';
+  if (images.length > 1) {
+    galleryArrowsHtml = `
+      <button class="card-gallery-prev" aria-label="Foto anterior" style="position:absolute;left:4px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.8);border:none;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 5px rgba(0,0,0,0.1);z-index:10;color:var(--gray-700);backdrop-filter:blur(4px);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg></button>
+      <button class="card-gallery-next" aria-label="Próxima foto" style="position:absolute;right:4px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.8);border:none;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 5px rgba(0,0,0,0.1);z-index:10;color:var(--gray-700);backdrop-filter:blur(4px);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
+    `;
+  }
 
   const badgesHtml = [
     produto.destaque ? `<span class="badge badge-gold">★ Destaque</span>` : '',
@@ -156,8 +167,9 @@ export function createProductCard(produto) {
 
   card.innerHTML = `
     ${cardTitle}
-    <div class="product-card-img-wrap">
+    <div class="product-card-img-wrap" style="position:relative;">
       ${imgHtml}
+      ${galleryArrowsHtml}
       <div class="card-badges" style="top: ${cardTitle ? '40px' : '10px'}">${badgesHtml}</div>
       <button class="card-favorite ${fav ? 'active' : ''}" title="Favoritar" aria-label="Favoritar produto" style="top: ${cardTitle ? '40px' : '10px'}">
         <svg viewBox="0 0 24 24" fill="${fav ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
@@ -200,9 +212,41 @@ export function createProductCard(produto) {
     wireQtyAndCart(card, produto, addBtn, false);
   }
 
+  // Wire card gallery
+  if (images.length > 1) {
+    const prevBtn = card.querySelector('.card-gallery-prev');
+    const nextBtn = card.querySelector('.card-gallery-next');
+    const imgEl = card.querySelector('.product-card-img');
+
+    const updateCardImage = (index) => {
+      if (index < 0) index = images.length - 1;
+      if (index >= images.length) index = 0;
+      currentIndex = index;
+
+      imgEl.style.opacity = '0.5';
+      setTimeout(() => {
+        imgEl.src = images[currentIndex];
+        imgEl.style.opacity = '1';
+      }, 150);
+    };
+
+    if (prevBtn) {
+      prevBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        updateCardImage(currentIndex - 1);
+      });
+    }
+    if (nextBtn) {
+      nextBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        updateCardImage(currentIndex + 1);
+      });
+    }
+  }
+
   // Open details modal
   card.addEventListener('click', e => {
-    if (e.target.closest('.card-favorite') || e.target.closest('.btn-add-cart') || e.target.closest('.qty-control')) return;
+    if (e.target.closest('.card-favorite') || e.target.closest('.btn-add-cart') || e.target.closest('.qty-control') || e.target.closest('.card-gallery-prev') || e.target.closest('.card-gallery-next')) return;
 
     const modalId = `modal-qty-${produto.id}`;
 
