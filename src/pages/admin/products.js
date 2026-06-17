@@ -242,20 +242,23 @@ function openProductForm(produto, onSave) {
 
   // Save
   document.getElementById('prod-save').addEventListener('click', async () => {
-    const nome = document.getElementById('p-nome').value.trim();
-    const preco = parseFloat(document.getElementById('p-preco').value);
-    const errEl = document.getElementById('prod-form-error');
-
-    if (!nome || isNaN(preco) || preco < 0) {
-      errEl.textContent = 'Preencha nome e preço corretamente.';
-      errEl.style.display = 'block';
-      return;
-    }
-    errEl.style.display = 'none';
-
     const saveBtn = document.getElementById('prod-save');
-    saveBtn.disabled = true;
-    saveBtn.innerHTML = '<span class="loader-ring" style="width:16px;height:16px;border-width:2px"></span>';
+    const isEdit = !!produto;
+
+    try {
+      const nome = document.getElementById('p-nome').value.trim();
+      const preco = parseFloat(document.getElementById('p-preco').value);
+      const errEl = document.getElementById('prod-form-error');
+
+      if (!nome || isNaN(preco) || preco < 0) {
+        errEl.textContent = 'Preencha nome e preço corretamente.';
+        errEl.style.display = 'block';
+        return;
+      }
+      errEl.style.display = 'none';
+
+      saveBtn.disabled = true;
+      saveBtn.innerHTML = '<span class="loader-ring" style="width:16px;height:16px;border-width:2px"></span>';
 
     let imgUrls = {
       1: produto?.imagem_url || null,
@@ -313,7 +316,16 @@ function openProductForm(produto, onSave) {
 
     showToast(isEdit ? 'Produto atualizado!' : 'Produto cadastrado!', 'success');
     close();
-    onSave();
+    if (onSave) onSave();
+    
+    } catch (err) {
+      console.error(err);
+      showToast('Erro inesperado: ' + err.message, 'error');
+      if (saveBtn) {
+        saveBtn.disabled = false;
+        saveBtn.textContent = isEdit ? 'Salvar Alterações' : 'Cadastrar Produto';
+      }
+    }
   });
 }
 
