@@ -173,6 +173,11 @@ function openProductForm(produto, onSave) {
           <span style="font-size:.88rem">Produto em Destaque</span>
         </label>
         <label class="toggle">
+          <input type="checkbox" id="p-mais-encomendado" ${produto?.mais_encomendado ? 'checked' : ''} />
+          <div class="track"></div>
+          <span style="font-size:.88rem">Mais Encomendado</span>
+        </label>
+        <label class="toggle">
           <input type="checkbox" id="p-encomenda" ${produto?.apenas_encomenda ? 'checked' : ''} />
           <div class="track"></div>
           <span style="font-size:.88rem">Somente por Encomenda</span>
@@ -293,6 +298,7 @@ function openProductForm(produto, onSave) {
       quantidade: parseInt(document.getElementById('p-qty').value) || 0,
       descricao: document.getElementById('p-desc').value.trim() || null,
       destaque: document.getElementById('p-destaque').checked,
+      mais_encomendado: document.getElementById('p-mais-encomendado').checked,
       apenas_encomenda: document.getElementById('p-encomenda').checked,
       imagem_url: imgUrls[1],
       imagem_url_2: imgUrls[2],

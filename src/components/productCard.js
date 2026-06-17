@@ -147,7 +147,7 @@ export function createProductCard(produto) {
   if (produto.destaque) {
     card.style.border = '2px solid var(--gold)';
     cardTitle = `<div style="background:var(--gold);color:white;text-align:center;font-size:0.75rem;font-weight:700;letter-spacing:0.1em;padding:6px;text-transform:uppercase;">Destaque</div>`;
-  } else if (produto.apenas_encomenda) {
+  } else if (produto.mais_encomendado) {
     card.style.border = '2px solid #222';
     cardTitle = `<div style="background:#222;color:white;text-align:center;font-size:0.75rem;font-weight:700;letter-spacing:0.1em;padding:6px;text-transform:uppercase;">Mais Encomendado</div>`;
   }
