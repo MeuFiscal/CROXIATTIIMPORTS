@@ -75,7 +75,7 @@ export async function renderAdminDestaques(container) {
     // ---- Load banners ----
     const load = async () => {
       listEl.innerHTML = '<div style="padding:32px;text-align:center;color:var(--gray-400)">Carregando...</div>';
-      const { data } = await supabase.from('banners').select('*').order('criado_at', { ascending: false });
+      const { data } = await supabase.from('banners').select('*').order('created_at', { ascending: false });
       const banners = data || [];
 
       if (!banners.length) {
