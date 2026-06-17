@@ -119,7 +119,8 @@ export async function renderAdminProducts(container) {
 // ---- Product Form Modal ----
 function openProductForm(produto, onSave) {
   const isEdit = !!produto;
-      <!-- Image Upload -->
+  const body = `
+    <form id="prod-form" novalidate style="display:flex;flex-direction:column;gap:16px">
       <div class="form-group">
         <label class="form-label">Imagens do Produto (Até 3 fotos)</label>
         <div style="display:flex;gap:12px;overflow-x:auto;padding-bottom:8px;">
