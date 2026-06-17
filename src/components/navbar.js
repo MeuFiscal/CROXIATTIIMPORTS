@@ -16,7 +16,12 @@ const NAV_ITEMS = [
 let navEl = null;
 
 export function renderNavbar() {
-  if (navEl) return;
+  if (navEl && document.body.contains(navEl)) return;
+  if (navEl && !document.body.contains(navEl)) {
+    document.body.appendChild(navEl);
+    return;
+  }
+  
   navEl = document.createElement('nav');
   navEl.className = 'app-navbar hide-desktop';
   navEl.id = 'app-navbar';
