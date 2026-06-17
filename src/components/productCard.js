@@ -206,13 +206,28 @@ export function createProductCard(produto) {
 
     const modalId = `modal-qty-${produto.id}`;
 
+    const images = [produto.imagem_url, produto.imagem_url_2, produto.imagem_url_3].filter(Boolean);
+    const mainImg = images[0] || '';
+
+    let galleryHtml = '';
+    if (images.length > 1) {
+      galleryHtml = `
+        <div style="display:flex;gap:8px;justify-content:center;margin-top:12px;">
+          ${images.map((img, idx) => `
+            <img src="${img}" class="modal-gallery-thumb" data-src="${img}" style="width:60px;height:60px;object-fit:cover;border-radius:6px;cursor:pointer;border:2px solid ${idx===0 ? 'var(--gold)' : 'transparent'};transition:all 0.2s;background:#fff;padding:2px;box-shadow:0 1px 3px rgba(0,0,0,0.05);" />
+          `).join('')}
+        </div>
+      `;
+    }
+
     const { overlay } = openModal({
       title: produto.nome,
       maxWidth: '600px',
       body: `
         <div style="display:flex;flex-direction:column;gap:20px;">
           <div style="width:100%;text-align:center;background:#f5f5f5;border-radius:8px;padding:20px;">
-            <img src="${produto.imagem_url || ''}" alt="${produto.nome}" style="max-width:100%;max-height:40vh;object-fit:contain;border-radius:4px;" />
+            <img id="modal-main-img-${produto.id}" src="${mainImg}" alt="${produto.nome}" style="max-width:100%;max-height:40vh;object-fit:contain;border-radius:4px;transition:opacity 0.2s;" />
+            ${galleryHtml}
           </div>
           <div>
             ${produto.marca ? `<p style="color:var(--gray-500);font-size:0.9rem;text-transform:uppercase;margin-bottom:4px;">${produto.marca}</p>` : ''}
@@ -236,6 +251,23 @@ export function createProductCard(produto) {
     if (!isDisabled) {
       const addBtn = overlay.querySelector(`#modal-add-cart-${produto.id}`);
       wireQtyAndCart(overlay, produto, addBtn, true);
+    }
+
+    // Wire gallery thumbnails
+    if (images.length > 1) {
+      const thumbs = overlay.querySelectorAll('.modal-gallery-thumb');
+      const mainImgEl = overlay.querySelector(`#modal-main-img-${produto.id}`);
+      thumbs.forEach(t => {
+        t.addEventListener('click', () => {
+          mainImgEl.style.opacity = '0.5';
+          setTimeout(() => {
+            mainImgEl.src = t.dataset.src;
+            mainImgEl.style.opacity = '1';
+          }, 150);
+          thumbs.forEach(th => th.style.borderColor = 'transparent');
+          t.style.borderColor = 'var(--gold)';
+        });
+      });
     }
   });
 

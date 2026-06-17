@@ -119,25 +119,26 @@ export async function renderAdminProducts(container) {
 // ---- Product Form Modal ----
 function openProductForm(produto, onSave) {
   const isEdit = !!produto;
-  let croppedBlob = null;
-  let previewUrl = produto?.imagem_url || null;
-
-  const body = `
-    <form id="prod-form" novalidate style="display:flex;flex-direction:column;gap:16px">
       <!-- Image Upload -->
       <div class="form-group">
-        <label class="form-label">Imagem do Produto</label>
-        <div id="img-preview-wrap" style="margin-bottom:10px;${previewUrl ? '' : 'display:none'}">
-          <div class="product-img-preview">
-            <img id="current-preview" src="${previewUrl || ''}" style="width:120px;height:120px;object-fit:cover;border-radius:12px" />
-            <button type="button" class="img-remove-btn" id="remove-img-btn">✕</button>
-          </div>
-        </div>
-        <div class="upload-area" id="upload-area" ${previewUrl ? 'style="display:none"' : ''}>
-          <div class="icon">📷</div>
-          <p><strong>Clique para enviar</strong> ou arraste aqui</p>
-          <p style="font-size:.78rem;margin-top:4px;color:var(--gray-400)">JPG, PNG, WEBP • Máx. 10MB</p>
-          <input type="file" id="img-file-input" accept="image/*" style="display:none" />
+        <label class="form-label">Imagens do Produto (Até 3 fotos)</label>
+        <div style="display:flex;gap:12px;overflow-x:auto;padding-bottom:8px;">
+          ${[1, 2, 3].map(i => {
+            const pUrl = i === 1 ? produto?.imagem_url : (i === 2 ? produto?.imagem_url_2 : produto?.imagem_url_3);
+            return `
+            <div style="flex:0 0 120px;display:flex;flex-direction:column;gap:8px;">
+              <div id="img-preview-wrap-${i}" style="position:relative;${pUrl ? '' : 'display:none'}">
+                <img id="current-preview-${i}" src="${pUrl || ''}" style="width:120px;height:120px;object-fit:cover;border-radius:8px;border:1px solid var(--gray-200)" />
+                <button type="button" class="img-remove-btn" data-slot="${i}" style="position:absolute;top:-6px;right:-6px;background:var(--error);color:#fff;border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:12px;line-height:1;display:flex;align-items:center;justify-content:center;">✕</button>
+              </div>
+              <div class="upload-area" id="upload-area-${i}" data-slot="${i}" style="width:120px;height:120px;border:2px dashed var(--gray-300);border-radius:8px;display:${pUrl ? 'none' : 'flex'};align-items:center;justify-content:center;cursor:pointer;flex-direction:column;background:var(--gray-50);transition:all 0.2s;">
+                <div style="font-size:24px;opacity:0.5">📷</div>
+                <div style="font-size:11px;color:var(--gray-500);margin-top:4px">Foto ${i}</div>
+                <input type="file" id="img-file-input-${i}" accept="image/*" style="display:none" />
+              </div>
+            </div>
+            `;
+          }).join('')}
         </div>
       </div>
 
@@ -195,36 +196,48 @@ function openProductForm(produto, onSave) {
 
   document.getElementById('prod-cancel').addEventListener('click', close);
 
-  // Upload area
-  const uploadArea = document.getElementById('upload-area');
-  const fileInput = document.getElementById('img-file-input');
-  const previewWrap = document.getElementById('img-preview-wrap');
-  const currentPreview = document.getElementById('current-preview');
+  // Upload area state
+  const imgState = {
+    1: { croppedBlob: null, previewUrl: produto?.imagem_url || null, removed: false },
+    2: { croppedBlob: null, previewUrl: produto?.imagem_url_2 || null, removed: false },
+    3: { croppedBlob: null, previewUrl: produto?.imagem_url_3 || null, removed: false },
+  };
 
-  uploadArea.addEventListener('click', () => fileInput.click());
-  uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.classList.add('drag-over'); });
-  uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('drag-over'));
-  uploadArea.addEventListener('drop', e => {
-    e.preventDefault();
-    uploadArea.classList.remove('drag-over');
-    const file = e.dataTransfer.files[0];
-    if (file) processImageFile(file);
-  });
-  fileInput.addEventListener('change', e => { if (e.target.files[0]) processImageFile(e.target.files[0]); });
-  document.getElementById('remove-img-btn').addEventListener('click', () => {
-    previewUrl = null; croppedBlob = null;
-    previewWrap.style.display = 'none';
-    uploadArea.style.display = '';
-    currentPreview.src = '';
-  });
+  [1, 2, 3].forEach(i => {
+    const uploadArea = document.getElementById(`upload-area-${i}`);
+    const fileInput = document.getElementById(`img-file-input-${i}`);
+    const previewWrap = document.getElementById(`img-preview-wrap-${i}`);
+    const currentPreview = document.getElementById(`current-preview-${i}`);
+    const removeBtn = previewWrap.querySelector('.img-remove-btn');
 
-  function processImageFile(file) {
-    croppedBlob = file;
-    previewUrl = URL.createObjectURL(file);
-    currentPreview.src = previewUrl;
-    previewWrap.style.display = '';
-    uploadArea.style.display = 'none';
-  }
+    uploadArea.addEventListener('click', () => fileInput.click());
+    uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.style.borderColor = 'var(--gold)'; });
+    uploadArea.addEventListener('dragleave', () => uploadArea.style.borderColor = 'var(--gray-300)');
+    uploadArea.addEventListener('drop', e => {
+      e.preventDefault();
+      uploadArea.style.borderColor = 'var(--gray-300)';
+      const file = e.dataTransfer.files[0];
+      if (file) processImageFile(i, file);
+    });
+    fileInput.addEventListener('change', e => { if (e.target.files[0]) processImageFile(i, e.target.files[0]); });
+    removeBtn.addEventListener('click', () => {
+      imgState[i].previewUrl = null;
+      imgState[i].croppedBlob = null;
+      imgState[i].removed = true;
+      previewWrap.style.display = 'none';
+      uploadArea.style.display = 'flex';
+      currentPreview.src = '';
+    });
+
+    function processImageFile(slot, file) {
+      imgState[slot].croppedBlob = file;
+      imgState[slot].previewUrl = URL.createObjectURL(file);
+      imgState[slot].removed = false;
+      currentPreview.src = imgState[slot].previewUrl;
+      previewWrap.style.display = 'block';
+      uploadArea.style.display = 'none';
+    }
+  });
 
   // Save
   document.getElementById('prod-save').addEventListener('click', async () => {
@@ -243,25 +256,30 @@ function openProductForm(produto, onSave) {
     saveBtn.disabled = true;
     saveBtn.innerHTML = '<span class="loader-ring" style="width:16px;height:16px;border-width:2px"></span>';
 
-    let imgUrl = produto?.imagem_url || null;
+    let imgUrls = {
+      1: produto?.imagem_url || null,
+      2: produto?.imagem_url_2 || null,
+      3: produto?.imagem_url_3 || null
+    };
 
-    // Upload image if changed
-    if (croppedBlob) {
-      const fileExt = croppedBlob.name.split('.').pop();
-      const fileName = `produto_${Date.now()}.${fileExt}`;
-      const { data: upData, error: upErr } = await supabase.storage
-        .from('produtos')
-        .upload(fileName, croppedBlob, { contentType: croppedBlob.type, upsert: false });
-      if (upErr) {
-        showToast('Erro no upload da imagem: ' + upErr.message, 'error');
-        saveBtn.disabled = false;
-        saveBtn.textContent = isEdit ? 'Salvar Alterações' : 'Cadastrar Produto';
-        return;
+    for (let i of [1, 2, 3]) {
+      if (imgState[i].croppedBlob) {
+        const fileExt = imgState[i].croppedBlob.name.split('.').pop();
+        const fileName = `produto_${i}_${Date.now()}.${fileExt}`;
+        const { data: upData, error: upErr } = await supabase.storage
+          .from('produtos')
+          .upload(fileName, imgState[i].croppedBlob, { contentType: imgState[i].croppedBlob.type, upsert: false });
+        if (upErr) {
+          showToast('Erro no upload da imagem ' + i + ': ' + upErr.message, 'error');
+          saveBtn.disabled = false;
+          saveBtn.textContent = isEdit ? 'Salvar Alterações' : 'Cadastrar Produto';
+          return;
+        }
+        const { data: urlData } = supabase.storage.from('produtos').getPublicUrl(upData.path);
+        imgUrls[i] = urlData.publicUrl;
+      } else if (imgState[i].removed || !imgState[i].previewUrl) {
+        imgUrls[i] = null;
       }
-      const { data: urlData } = supabase.storage.from('produtos').getPublicUrl(upData.path);
-      imgUrl = urlData.publicUrl;
-    } else if (!previewUrl) {
-      imgUrl = null;
     }
 
     const payload = {
@@ -272,7 +290,9 @@ function openProductForm(produto, onSave) {
       descricao: document.getElementById('p-desc').value.trim() || null,
       destaque: document.getElementById('p-destaque').checked,
       apenas_encomenda: document.getElementById('p-encomenda').checked,
-      imagem_url: imgUrl,
+      imagem_url: imgUrls[1],
+      imagem_url_2: imgUrls[2],
+      imagem_url_3: imgUrls[3],
       updated_at: new Date().toISOString()
     };
 
