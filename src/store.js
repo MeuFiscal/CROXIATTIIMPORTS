@@ -43,7 +43,8 @@ export function addToCart(produto, quantidade = 1, qtyEstoque = null, qtyEncomen
       ...produto,
       quantidade,
       qty_estoque: estoqueQty,
-      qty_encomenda: encomendaQty
+      qty_encomenda: encomendaQty,
+      estoque_original: produto.quantidade
     });
   }
   saveCart(cart);
@@ -58,7 +59,22 @@ export function updateCartQty(productId, qty) {
   const idx = cart.findIndex(i => i.id === productId);
   if (idx >= 0) {
     if (qty <= 0) { cart.splice(idx, 1); }
-    else { cart[idx].quantidade = qty; }
+    else { 
+      const item = cart[idx];
+      item.quantidade = qty; 
+      
+      const isOutOfStock = !item.apenas_encomenda && (item.estoque_original || 0) <= 0;
+      const isEncomendaAction = item.apenas_encomenda || isOutOfStock;
+      
+      if (isEncomendaAction) {
+        item.qty_estoque = 0;
+        item.qty_encomenda = qty;
+      } else {
+        const estOriginal = item.estoque_original || 0;
+        item.qty_estoque = Math.min(qty, estOriginal);
+        item.qty_encomenda = Math.max(0, qty - estOriginal);
+      }
+    }
     saveCart(cart);
   }
 }

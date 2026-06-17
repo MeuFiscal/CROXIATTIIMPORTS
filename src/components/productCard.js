@@ -69,7 +69,9 @@ function wireQtyAndCart(root, produto, addBtn, isModal = false) {
   const qtyDisplay = ctrl.querySelector('.qty-value');
   let qty = 1;
 
-  const estoqueDisponivel = produto.apenas_encomenda ? Infinity : (produto.quantidade || 0);
+  const isOutOfStock = !produto.apenas_encomenda && produto.quantidade <= 0;
+  const isEncomendaAction = produto.apenas_encomenda || isOutOfStock;
+  const estoqueDisponivel = isEncomendaAction ? Infinity : (produto.quantidade || 0);
 
   minusBtn.addEventListener('click', e => {
     e.stopPropagation();
@@ -86,8 +88,8 @@ function wireQtyAndCart(root, produto, addBtn, isModal = false) {
     addBtn.addEventListener('click', e => {
       e.stopPropagation();
 
-      // If product is encomenda-only: always add as encomenda
-      if (produto.apenas_encomenda) {
+      // If product is encomenda-only or out of stock: always add entirely as encomenda
+      if (isEncomendaAction) {
         addToCart(produto, qty, 0, qty);
         showCartPopup(produto);
         if (isModal) document.querySelector('.modal-overlay')?.remove();
@@ -130,10 +132,13 @@ export function createProductCard(produto) {
     produto.apenas_encomenda ? `<span class="badge badge-encomenda">Encomenda</span>` : ''
   ].filter(Boolean).join('');
 
+  const isOutOfStock = !produto.apenas_encomenda && produto.quantidade <= 0;
+  const isEncomendaAction = produto.apenas_encomenda || isOutOfStock;
+
   const stockText = produto.apenas_encomenda
     ? '<span class="card-stock">Sob encomenda</span>'
-    : produto.quantidade <= 0
-      ? '<span class="card-stock low">Sem estoque</span>'
+    : isOutOfStock
+      ? '<span class="card-stock low">Esgotado - Disponível para encomenda</span>'
       : produto.quantidade <= 3
         ? `<span class="card-stock low">Últimas ${produto.quantidade} unidades</span>`
         : `<span class="card-stock">${produto.quantidade} disponíveis</span>`;
@@ -147,7 +152,7 @@ export function createProductCard(produto) {
     cardTitle = `<div style="background:#222;color:white;text-align:center;font-size:0.75rem;font-weight:700;letter-spacing:0.1em;padding:6px;text-transform:uppercase;">Mais Encomendado</div>`;
   }
 
-  const isDisabled = !produto.apenas_encomenda && produto.quantidade <= 0;
+  const isDisabled = false; // Never disabled now, out of stock goes to encomenda
 
   card.innerHTML = `
     ${cardTitle}
@@ -173,7 +178,7 @@ export function createProductCard(produto) {
           <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
           <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
         </svg>
-        ${produto.apenas_encomenda ? 'Encomendar' : 'Adicionar'}
+        ${isEncomendaAction ? 'Encomendar' : 'Adicionar'}
       </button>
     </div>
   `;
@@ -221,7 +226,7 @@ export function createProductCard(produto) {
         <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
           ${!isDisabled ? `<div class="qty-control" id="modal-qty-${produto.id}"><button class="qty-btn qty-minus" type="button">−</button><span class="qty-value">1</span><button class="qty-btn qty-plus" type="button">+</button></div>` : ''}
           <button class="btn btn-primary" id="modal-add-cart-${produto.id}" style="flex:1;" ${isDisabled ? 'disabled' : ''}>
-            ${produto.apenas_encomenda ? '📦 Encomendar' : '🛒 Adicionar ao Carrinho'}
+            ${isEncomendaAction ? '📦 Encomendar' : '🛒 Adicionar ao Carrinho'}
           </button>
         </div>
       `
