@@ -24,15 +24,15 @@ export async function renderHome(container) {
             <img src="/logo.png" alt="Croxiatti" class="hero-crown-img" />
           </div>
 
-          <p class="hero-dark-label">✦ FRAGRÂNCIAS DE LUXO SELECIONADAS</p>
+          <p class="hero-dark-label">✦ SELEÇÃO PREMIUM DE BELEZA E PERFUMARIA</p>
 
           <h1 class="hero-dark-title">
-            SOFISTICAÇÃO QUE<br>
-            <span class="hero-dark-title-gold">TRANSCENDE FRONTEIRAS</span>
+            REALCE SUA BELEZA.<br>
+            <span class="hero-dark-title-gold">MARQUE SUA PRESENÇA.</span>
           </h1>
 
-          <p class="hero-dark-sub">
-            Perfumes selecionados para pessoas que transformam<br>presença em assinatura.
+          <p class="hero-dark-sub" style="max-width:700px; margin: 0 auto;">
+            Perfumes, skincare e cuidados pessoais selecionados para quem valoriza qualidade, sofisticação e autocuidado em cada detalhe.
           </p>
 
           <div class="hero-dark-actions">
