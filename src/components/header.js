@@ -57,18 +57,27 @@ export function renderHeader(app) {
 
     <!-- Barra de Categorias Premium -->
     <div class="header-categories">
-      <div class="container categories-inner">
-        <a href="#/search?q=perfume" class="cat-link">Perfumes</a>
-        <a href="#/search?q=skincare" class="cat-link">Skincare</a>
-        <a href="#/search?q=cabelo" class="cat-link">Cabelos</a>
-        <a href="#/search?q=corpo" class="cat-link">Corpo e Banho</a>
-        <a href="#/search?q=maquiagem" class="cat-link">Maquiagem</a>
-        <a href="#/search?q=presente" class="cat-link text-gold" style="font-weight: 600;">✦ Kits & Presentes</a>
+      <div class="container categories-inner" id="header-categories-inner">
+        <!-- Loaded dynamically -->
       </div>
     </div>
   `;
 
   app.prepend(headerElement);
+
+  // Load categories
+  supabase.from('categorias').select('id, nome').order('ordem', { ascending: true })
+    .then(({ data }) => {
+      const catContainer = headerElement.querySelector('#header-categories-inner');
+      if (data && data.length > 0) {
+        catContainer.innerHTML = data.map(cat => 
+          `<a href="#/search?categoria=${cat.id}" class="cat-link">${cat.nome}</a>`
+        ).join('');
+      } else {
+        // Fallback or empty
+        catContainer.innerHTML = '';
+      }
+    });
 
   // Logo → home
   headerElement.querySelector('#logo-home').addEventListener('click', () => navigate('/'));

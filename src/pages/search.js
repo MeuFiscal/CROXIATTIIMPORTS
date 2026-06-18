@@ -11,6 +11,7 @@ export async function renderSearch(container) {
 
   const { params } = getParams();
   const initialQ = params.q || '';
+  const initialCategoria = params.categoria || '';
   const initialFilter = params.filter || '';
   const initialSort = params.sort || '';
 
@@ -95,6 +96,7 @@ export async function renderSearch(container) {
 
     let query = supabase.from('produtos').select('*', { count: 'exact' });
     if (q) query = query.ilike('nome', `%${q}%`);
+    if (initialCategoria) query = query.eq('categoria_id', initialCategoria);
     if (marca) query = query.eq('marca', marca);
     if (priceMin !== null) query = query.gte('preco', priceMin);
     if (priceMax !== null) query = query.lte('preco', priceMax);

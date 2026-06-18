@@ -1,6 +1,14 @@
 -- Execute este script no SQL Editor do Supabase Dashboard (https://supabase.com)
 
--- 1. Tabela Produtos
+-- 1. Tabela Categorias
+create table public.categorias (
+  id uuid primary key default gen_random_uuid(),
+  nome text not null,
+  ordem int default 0,
+  created_at timestamptz default now()
+);
+
+-- 2. Tabela Produtos
 create table public.produtos (
   id uuid primary key default gen_random_uuid(),
   nome text not null,
@@ -12,6 +20,7 @@ create table public.produtos (
   destaque boolean default false,
   apenas_encomenda boolean default false,
   total_pedidos int default 0,
+  categoria_id uuid references public.categorias(id) on delete set null,
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );
@@ -63,11 +72,16 @@ alter publication supabase_realtime add table public.pedidos;
 -- ==========================================
 -- POLÍTICAS DE SEGURANÇA (RLS)
 -- ==========================================
+alter table public.categorias enable row level security;
 alter table public.produtos enable row level security;
 alter table public.clientes enable row level security;
 alter table public.pedidos enable row level security;
 alter table public.pedido_itens enable row level security;
 alter table public.favoritos enable row level security;
+
+-- Categorias: qualquer um pode ler. Apenas autenticados (admin) podem alterar
+create policy "Leitura pública categorias" on public.categorias for select using (true);
+create policy "Admin gerencia categorias" on public.categorias for all using (auth.role() = 'authenticated');
 
 -- Produtos: qualquer um pode ler. Apenas autenticados (admin) podem alterar
 create policy "Leitura pública produtos" on public.produtos for select using (true);

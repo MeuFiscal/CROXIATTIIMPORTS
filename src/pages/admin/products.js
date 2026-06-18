@@ -149,6 +149,12 @@ function openProductForm(produto, onSave) {
           <input class="form-input" type="text" id="p-nome" value="${produto?.nome || ''}" required />
         </div>
         <div class="form-group">
+          <label class="form-label" for="p-categoria">Categoria</label>
+          <select class="form-input" id="p-categoria" style="padding:10px 14px; background:var(--gray-50); border:1px solid var(--gray-200); border-radius:8px;">
+            <option value="">Sem categoria</option>
+          </select>
+        </div>
+        <div class="form-group">
           <label class="form-label" for="p-marca">Marca</label>
           <input class="form-input" type="text" id="p-marca" value="${produto?.marca || ''}" />
         </div>
@@ -199,6 +205,21 @@ function openProductForm(produto, onSave) {
     title: isEdit ? 'Editar Produto' : 'Novo Produto',
     body, footer, maxWidth: '600px'
   });
+
+  // Fetch categories and populate select
+  supabase.from('categorias').select('id, nome').order('ordem', { ascending: true })
+    .then(({ data }) => {
+      if (data) {
+        const sel = document.getElementById('p-categoria');
+        data.forEach(cat => {
+          const opt = document.createElement('option');
+          opt.value = cat.id;
+          opt.textContent = cat.nome;
+          if (produto?.categoria_id === cat.id) opt.selected = true;
+          sel.appendChild(opt);
+        });
+      }
+    });
 
   document.getElementById('prod-cancel').addEventListener('click', close);
 
@@ -291,6 +312,7 @@ function openProductForm(produto, onSave) {
       }
     }
 
+    const catVal = document.getElementById('p-categoria').value;
     const payload = {
       nome,
       marca: document.getElementById('p-marca').value.trim() || null,
@@ -300,6 +322,7 @@ function openProductForm(produto, onSave) {
       destaque: document.getElementById('p-destaque').checked,
       mais_encomendado: document.getElementById('p-mais-encomendado').checked,
       apenas_encomenda: document.getElementById('p-encomenda').checked,
+      categoria_id: catVal ? catVal : null,
       imagem_url: imgUrls[1],
       imagem_url_2: imgUrls[2],
       imagem_url_3: imgUrls[3],
