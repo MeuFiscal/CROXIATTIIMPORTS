@@ -155,78 +155,14 @@ export async function renderAdminDestaques(container) {
       });
     };
 
-    // ---- Image Crop Modal ----
-    const openCropModal = (file, onCropComplete) => {
-      const url = URL.createObjectURL(file);
-      const body = `
-        <div style="width:100%;height:350px;background:#f5f5f5;border-radius:8px;overflow:hidden;">
-          <img id="crop-img-modal" src="${url}" style="display:block;max-width:100%;" />
-        </div>
-      `;
-      const footer = `
-        <button class="btn btn-ghost" id="crop-cancel-btn">Cancelar</button>
-        <button class="btn btn-primary" id="crop-save-btn">Aplicar Enquadramento</button>
-      `;
-
-      const { close } = openModal({
-        title: 'Enquadrar Imagem (3:1)',
-        body,
-        footer,
-        maxWidth: '800px'
-      });
-
-      const img = document.getElementById('crop-img-modal');
-
-      import('cropperjs').then(({ default: Cropper }) => {
-        if (!document.getElementById('cropper-css')) {
-          const link = document.createElement('link');
-          link.rel = 'stylesheet';
-          link.id = 'cropper-css';
-          link.href = 'https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css';
-          document.head.appendChild(link);
-        }
-
-        setTimeout(() => {
-          const cropper = new Cropper(img, {
-            aspectRatio: 3, // 1200 / 400
-            viewMode: 2,
-            dragMode: 'move',
-            autoCropArea: 1,
-            background: true,
-            movable: true,
-            zoomable: true,
-            rotatable: false,
-            scalable: false
-          });
-
-          document.getElementById('crop-cancel-btn').addEventListener('click', () => {
-            cropper.destroy();
-            close();
-          });
-
-          document.getElementById('crop-save-btn').addEventListener('click', () => {
-            const canvas = cropper.getCroppedCanvas({ maxWidth: 2400, maxHeight: 800, imageSmoothingQuality: 'high' });
-            canvas.toBlob(blob => {
-              cropper.destroy();
-              close();
-              onCropComplete(blob, file.name);
-            }, 'image/jpeg', 0.9);
-          });
-        }, 100);
-      });
-    };
-
     // ---- File input / drag and drop ----
     const setPreview = (file) => {
-      openCropModal(file, (croppedBlob, originalName) => {
-        selectedFile = croppedBlob;
-        selectedFile.name = originalName;
-        const url = URL.createObjectURL(croppedBlob);
-        previewImg.src = url;
-        previewWrap.style.display = 'block';
-        placeholder.style.display = 'none';
-        dropZone.style.borderColor = 'var(--gold)';
-      });
+      selectedFile = file;
+      const url = URL.createObjectURL(file);
+      previewImg.src = url;
+      previewWrap.style.display = 'block';
+      placeholder.style.display = 'none';
+      dropZone.style.borderColor = 'var(--gold)';
     };
 
     dropZone.addEventListener('click', () => fileInput.click());

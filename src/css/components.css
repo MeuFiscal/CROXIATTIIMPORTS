@@ -550,8 +550,6 @@
 .promo-banner-img {
   width: 100%;
   height: auto;
-  max-height: 320px;
-  object-fit: cover;
   display: block;
   transition: transform 0.4s ease;
 }
@@ -560,7 +558,6 @@
 }
 @media (max-width: 768px) {
   .promo-banners-section { padding: 12px 12px 0; gap: 12px; }
-  .promo-banner-img { max-height: 180px; }
 }
 
 /* Section */
