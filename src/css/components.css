@@ -403,8 +403,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 520px;
-  margin-bottom: 32px;
+  min-height: 280px;
+  margin-bottom: 24px;
 }
 .hero-dark-bg {
   position: absolute; inset: 0;
@@ -425,15 +425,15 @@
 .hero-dark-content {
   position: relative; z-index: 2;
   text-align: center;
-  padding: 52px 24px 32px;
+  padding: 32px 24px 16px;
   display: flex; flex-direction: column; align-items: center;
   max-width: 680px;
 }
 .hero-crown {
-  margin-bottom: 20px;
+  margin-bottom: 8px;
 }
 .hero-crown-img {
-  height: 110px;
+  height: 60px;
   width: auto;
   object-fit: contain;
   filter: drop-shadow(0 0 12px rgba(200,155,60,0.6));
@@ -442,7 +442,7 @@
   font-size: 0.78rem; font-weight: 600;
   letter-spacing: 0.28em; text-transform: uppercase;
   color: rgba(200,155,60,0.9);
-  margin-bottom: 14px;
+  margin-bottom: 8px;
 }
 .hero-dark-title {
   font-family: var(--font-serif);
@@ -452,7 +452,7 @@
   line-height: 1.1;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
   text-shadow: 0 2px 20px rgba(0,0,0,0.6);
 }
 .hero-dark-title-gold {
@@ -464,7 +464,7 @@
   font-size: 0.95rem;
   color: rgba(255,255,255,0.75);
   line-height: 1.7;
-  margin: 16px 0 28px;
+  margin: 8px 0 16px;
   max-width: 520px;
 }
 .hero-dark-actions {
@@ -504,19 +504,19 @@
   transform: translateY(-2px);
 }
 @media (max-width: 768px) {
-  .hero-banner-dark { min-height: 220px; margin-bottom: 24px; }
-  .hero-dark-content { padding: 20px 16px 16px; }
-  .hero-crown-img { height: 60px; }
+  .hero-banner-dark { min-height: 160px; margin-bottom: 20px; }
+  .hero-dark-content { padding: 16px 12px 12px; }
+  .hero-crown-img { height: 40px; }
 }
 @media (max-width: 480px) {
-  .hero-dark-title { font-size: 1.6rem; letter-spacing: 0.02em; }
-  .hero-dark-title-gold { font-size: 1.35rem; }
-  .hero-dark-sub { font-size: 0.85rem; margin: 12px 0 24px; }
+  .hero-dark-title { font-size: 1.4rem; letter-spacing: 0.02em; }
+  .hero-dark-title-gold { font-size: 1.2rem; }
+  .hero-dark-sub { font-size: 0.8rem; margin: 8px 0 16px; }
   
   .hero-dark-actions { 
     flex-direction: column; 
     width: 100%; 
-    gap: 10px; 
+    gap: 8px; 
   }
   .hero-btn-solid, .hero-btn-outline { 
     width: 100%; 
