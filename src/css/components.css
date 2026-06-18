@@ -504,9 +504,9 @@
   transform: translateY(-2px);
 }
 @media (max-width: 768px) {
-  .hero-banner-dark { min-height: 420px; }
-  .hero-dark-content { padding: 32px 16px 24px; }
-  .hero-crown-img { height: 85px; }
+  .hero-banner-dark { min-height: 220px; margin-bottom: 24px; }
+  .hero-dark-content { padding: 20px 16px 16px; }
+  .hero-crown-img { height: 60px; }
 }
 @media (max-width: 480px) {
   .hero-dark-title { font-size: 1.6rem; letter-spacing: 0.02em; }
