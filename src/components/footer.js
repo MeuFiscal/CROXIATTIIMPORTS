@@ -43,8 +43,8 @@ export function renderFooter(app) {
         <h4 style="color: var(--white); font-family: var(--font-serif); font-size: 1.1rem; margin-bottom: 20px;">Atendimento</h4>
         <ul style="display: flex; flex-direction: column; gap: 12px; list-style: none; padding: 0;">
           <li><a href="#/my-orders" style="color: var(--gray-400); text-decoration: none; transition: color var(--transition);">Acompanhar Pedido</a></li>
-          <li><a href="#/" style="color: var(--gray-400); text-decoration: none; transition: color var(--transition);">Política de Trocas</a></li>
-          <li><a href="#/" style="color: var(--gray-400); text-decoration: none; transition: color var(--transition);">Dúvidas Frequentes</a></li>
+          <li><a href="#/policy" style="color: var(--gray-400); text-decoration: none; transition: color var(--transition);">Política de Trocas</a></li>
+          <li><a href="#/faq" style="color: var(--gray-400); text-decoration: none; transition: color var(--transition);">Dúvidas Frequentes</a></li>
         </ul>
       </div>
     </div>

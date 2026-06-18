@@ -68,6 +68,8 @@ const lazyFavorites  = () => import('./pages/favorites.js').then(m => m.renderFa
 const lazyCart       = () => import('./pages/cart.js').then(m => m.renderCart);
 const lazyCheckout   = () => import('./pages/checkout.js').then(m => m.renderCheckout);
 const lazyMyOrders   = () => import('./pages/myOrders.js').then(m => m.renderMyOrders);
+const lazyPolicy     = () => import('./pages/policy.js').then(m => m.renderPolicy);
+const lazyFaq        = () => import('./pages/faq.js').then(m => m.renderFaq);
 
 const lazyAdminLogin     = () => import('./pages/admin/login.js').then(m => m.renderAdminLogin);
 const lazyAdminDash      = () => import('./pages/admin/dashboard.js').then(m => m.renderDashboard);
@@ -107,6 +109,16 @@ registerRoute('/checkout', withShell(async (el) => {
 
 registerRoute('/my-orders', withShell(async (el) => {
   const fn = await lazyMyOrders();
+  return fn(el);
+}));
+
+registerRoute('/policy', withShell(async (el) => {
+  const fn = await lazyPolicy();
+  return fn(el);
+}));
+
+registerRoute('/faq', withShell(async (el) => {
+  const fn = await lazyFaq();
   return fn(el);
 }));
 
