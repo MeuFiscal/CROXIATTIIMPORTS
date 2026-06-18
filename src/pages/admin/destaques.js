@@ -159,8 +159,8 @@ export async function renderAdminDestaques(container) {
     const openCropModal = (file, onCropComplete) => {
       const url = URL.createObjectURL(file);
       const body = `
-        <div style="max-height:60vh;overflow:hidden;background:#000">
-          <img id="crop-img-modal" src="${url}" style="max-width:100%;display:block;" />
+        <div style="width:100%;height:350px;background:#f5f5f5;border-radius:8px;overflow:hidden;">
+          <img id="crop-img-modal" src="${url}" style="display:block;max-width:100%;" />
         </div>
       `;
       const footer = `
@@ -189,10 +189,10 @@ export async function renderAdminDestaques(container) {
         setTimeout(() => {
           const cropper = new Cropper(img, {
             aspectRatio: 3, // 1200 / 400
-            viewMode: 1,
+            viewMode: 2,
             dragMode: 'move',
             autoCropArea: 1,
-            background: false,
+            background: true,
             movable: true,
             zoomable: true,
             rotatable: false,
