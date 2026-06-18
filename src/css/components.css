@@ -640,9 +640,23 @@
     -webkit-overflow-scrolling: touch;
   }
   .featured-scroll .product-card {
-    flex: 0 0 180px; scroll-snap-align: start;
+    flex: 0 0 160px; scroll-snap-align: start;
   }
   .featured-scroll::-webkit-scrollbar { height: 3px; }
+
+  /* Mobile compact product cards */
+  .product-card-img-wrap { aspect-ratio: 1/1; }
+  .product-card-img { padding: 4px; }
+  .product-card-body { padding: 10px 10px 6px; gap: 4px; }
+  .card-name { font-size: 0.9rem; line-height: 1.2; }
+  .card-price { font-size: 1.1rem; }
+  .product-card-footer { padding: 0 10px 10px; gap: 6px; }
+  .qty-control { height: 32px; }
+  .qty-btn { width: 32px; font-size: 1rem; }
+  .btn-add-cart { padding: 8px; font-size: 0.75rem; }
+  .card-favorite { width: 30px; height: 30px; top: 6px; right: 6px; }
+  .card-favorite svg { width: 16px; height: 16px; }
+  .card-badges { top: 6px; left: 6px; gap: 4px; }
 }
 
 /* ======================================================

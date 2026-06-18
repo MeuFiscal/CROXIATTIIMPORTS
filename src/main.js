@@ -74,6 +74,7 @@ const lazyFaq        = () => import('./pages/faq.js').then(m => m.renderFaq);
 const lazyAdminLogin     = () => import('./pages/admin/login.js').then(m => m.renderAdminLogin);
 const lazyAdminDash      = () => import('./pages/admin/dashboard.js').then(m => m.renderDashboard);
 const lazyAdminProducts  = () => import('./pages/admin/products.js').then(m => m.renderAdminProducts);
+const lazyAdminCategories = () => import('./pages/admin/categories.js').then(m => m.renderCategoriesAdmin);
 const lazyAdminOrders    = () => import('./pages/admin/orders.js').then(m => m.renderAdminOrders);
 const lazyAdminEncomendas= () => import('./pages/admin/encomendas.js').then(m => m.renderAdminEncomendas);
 const lazyAdminEntregar  = () => import('./pages/admin/entregar.js').then(m => m.renderAdminEntregar);
@@ -135,6 +136,11 @@ registerRoute('/admin/dashboard', withAdminShell(async (el) => {
 
 registerRoute('/admin/products', withAdminShell(async (el) => {
   const fn = await lazyAdminProducts();
+  return fn(el);
+}));
+
+registerRoute('/admin/categories', withAdminShell(async (el) => {
+  const fn = await lazyAdminCategories();
   return fn(el);
 }));
 
