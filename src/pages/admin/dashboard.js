@@ -4,6 +4,7 @@
 import { supabase } from '../../supabase.js';
 import { requireAdmin, renderAdminLayout } from './layout.js';
 import { formatCurrency } from '../../components/productCard.js';
+import { confirmModal } from '../../components/modal.js';
 import Chart from 'chart.js/auto';
 
 export async function renderDashboard(container) {
@@ -11,6 +12,12 @@ export async function renderDashboard(container) {
 
   return renderAdminLayout(container, 'Dashboard', async (content) => {
     content.innerHTML = `
+      <div style="display:flex; justify-content:flex-end; margin-bottom: 20px;">
+        <button id="btn-reset-dashboard" class="btn" style="background: var(--error); color: white; border: none; padding: 10px 16px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" style="margin-right:8px;vertical-align:middle"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          Zerar Dashboard
+        </button>
+      </div>
       <div class="stat-grid" id="stat-grid">
         ${Array(6).fill('<div class="stat-card"><div class="stat-info"><div class="skeleton" style="height:12px;width:80px;margin-bottom:10px"></div><div class="skeleton" style="height:32px;width:60px"></div></div></div>').join('')}
       </div>
@@ -41,6 +48,29 @@ export async function renderDashboard(container) {
     renderOrdersChart(ordersChart);
     renderTopChart(topProducts);
     renderLowStock(content, lowStock);
+
+    content.querySelector('#btn-reset-dashboard').addEventListener('click', async () => {
+      const confirmed = await confirmModal({
+        title: 'Zerar Dashboard',
+        message: 'Deseja realmente apagar todos os clientes e pedidos? Esta ação apagará permanentemente esses dados do aplicativo e do banco de dados.',
+        confirmText: 'Sim, Zerar Tudo',
+        cancelText: 'Cancelar',
+        danger: true
+      });
+      
+      if (confirmed) {
+        const btn = content.querySelector('#btn-reset-dashboard');
+        btn.innerHTML = '<span class="loader-ring" style="width:16px;height:16px;border-width:2px;vertical-align:middle;margin-right:8px"></span> Zerando...';
+        btn.disabled = true;
+
+        // The 'neq' filter matches all records
+        await supabase.from('pedido_itens').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+        await supabase.from('pedidos').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+        await supabase.from('clientes').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+        
+        window.location.reload();
+      }
+    });
   });
 }
 

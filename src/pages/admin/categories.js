@@ -1,21 +1,25 @@
 import { supabase } from '../../supabase.js';
+import { requireAdmin, renderAdminLayout } from './layout.js';
 
 export async function renderCategoriesAdmin(container) {
-  let sortCol = 'ordem';
-  let sortAsc = true;
+  if (!await requireAdmin()) return;
 
-  async function loadData() {
-    container.innerHTML = `<div style="padding:40px;text-align:center;">Carregando categorias...</div>`;
-    
-    let query = supabase.from('categorias').select('*').order(sortCol, { ascending: sortAsc });
-    const { data, error } = await query;
-    if (error) {
-      container.innerHTML = `<div style="padding:20px;color:red;">Erro ao carregar categorias: ${error.message}</div>`;
-      return;
+  return renderAdminLayout(container, 'Categorias', async (content) => {
+    let sortCol = 'ordem';
+    let sortAsc = true;
+
+    async function loadData() {
+      content.innerHTML = `<div style="padding:40px;text-align:center;">Carregando categorias...</div>`;
+      
+      let query = supabase.from('categorias').select('*').order(sortCol, { ascending: sortAsc });
+      const { data, error } = await query;
+      if (error) {
+        content.innerHTML = `<div style="padding:20px;color:red;">Erro ao carregar categorias: ${error.message}</div>`;
+        return;
+      }
+      
+      renderUI(data);
     }
-    
-    renderUI(data);
-  }
 
   function renderUI(categorias) {
     const html = `
@@ -77,7 +81,7 @@ export async function renderCategoriesAdmin(container) {
       </div>
     `;
 
-    container.innerHTML = html;
+    content.innerHTML = html;
 
     const modal = document.getElementById('modal-category');
     const form = document.getElementById('form-category');
@@ -104,13 +108,13 @@ export async function renderCategoriesAdmin(container) {
     document.getElementById('modal-category-close').addEventListener('click', closeModal);
     document.getElementById('btn-cancel-cat').addEventListener('click', closeModal);
 
-    container.querySelectorAll('.btn-edit-category').forEach(btn => {
+    document.querySelectorAll('.btn-edit-category').forEach(btn => {
       btn.addEventListener('click', (e) => {
         openModal(e.target.dataset.id, e.target.dataset.nome, e.target.dataset.ordem);
       });
     });
 
-    container.querySelectorAll('.btn-del-category').forEach(btn => {
+    document.querySelectorAll('.btn-del-category').forEach(btn => {
       btn.addEventListener('click', async (e) => {
         if(confirm('Tem certeza que deseja excluir esta categoria? Os produtos vinculados a ela ficarão sem categoria.')) {
           const { error } = await supabase.from('categorias').delete().eq('id', e.target.dataset.id);
@@ -146,4 +150,5 @@ export async function renderCategoriesAdmin(container) {
   }
 
   await loadData();
+  });
 }
