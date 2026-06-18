@@ -174,9 +174,9 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); }
 /* --- Buttons --- */
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  padding: 12px 24px; border-radius: var(--radius-md);
+  padding: 12px 24px; border-radius: var(--radius-lg); /* softer */
   font-size: 0.9rem; font-weight: 500; letter-spacing: 0.03em;
-  transition: all var(--transition);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative; overflow: hidden;
   -webkit-tap-highlight-color: transparent;
 }
@@ -186,21 +186,25 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); }
   background: rgba(255,255,255,0.1);
   opacity: 0; transition: opacity var(--transition);
 }
+.btn:hover { transform: translateY(-2px); }
 .btn:hover::after { opacity: 1; }
-.btn:active { transform: scale(0.97); }
+.btn:active { transform: translateY(0) scale(0.97); }
 
 .btn-primary {
   background: linear-gradient(135deg, var(--gold), var(--gold-dark));
   color: var(--white);
-  box-shadow: var(--shadow-gold);
+  box-shadow: 0 4px 15px rgba(200,155,60,0.3);
+  border: 1px solid rgba(255,255,255,0.1);
 }
-.btn-primary:hover { box-shadow: 0 6px 24px rgba(200,155,60,0.45); }
+.btn-primary:hover { box-shadow: 0 8px 25px rgba(200,155,60,0.5); }
 
 .btn-secondary {
-  background: var(--black);
+  background: linear-gradient(135deg, var(--gray-900), var(--black));
   color: var(--white);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.05);
 }
-.btn-secondary:hover { background: var(--gray-700); }
+.btn-secondary:hover { box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
 
 .btn-outline {
   border: 1.5px solid var(--gold);

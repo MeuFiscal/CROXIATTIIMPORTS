@@ -42,6 +42,36 @@ export async function renderHome(container) {
         </div>
       </section>
 
+      <!-- Trust Section (Faixa de Confiança) -->
+      <section class="trust-section" aria-label="Por que comprar conosco">
+        <div class="container trust-inner">
+          <div class="trust-item">
+            <div class="trust-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+            </div>
+            <span class="trust-text">Produtos Originais</span>
+          </div>
+          <div class="trust-item">
+            <div class="trust-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <span class="trust-text">Atendimento Personalizado</span>
+          </div>
+          <div class="trust-item">
+            <div class="trust-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <span class="trust-text">Compra Segura</span>
+          </div>
+          <div class="trust-item">
+            <div class="trust-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+            </div>
+            <span class="trust-text">Encomendas Exclusivas</span>
+          </div>
+        </div>
+      </section>
+
       <!-- Promo Banners (gerenciados pelo admin) -->
       <div id="promo-banners-wrap"></div>
 
@@ -56,6 +86,25 @@ export async function renderHome(container) {
         </div>
         <div id="vitrine-grid" class="product-grid"></div>
         <div id="load-more-wrap" style="text-align:center;margin-top:32px"></div>
+      </section>
+
+      <!-- Social Proof (Placeholder) -->
+      <section class="social-proof-section container" style="padding: 40px 20px; border-top: 1px solid var(--gray-200); text-align: center; margin-top: 20px;">
+        <div style="font-size: 0.78rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px;">Experiência Croxiatti</div>
+        <h2 style="font-family: var(--font-serif); font-size: 1.8rem; font-weight: 500; color: var(--black); margin-bottom: 32px;">O que nossos clientes dizem</h2>
+        <div style="display: flex; gap: 24px; justify-content: center; flex-wrap: wrap;">
+          <!-- Empty luxurious placeholders for future reviews -->
+          <div style="background: var(--white); border: 1px solid var(--gray-200); padding: 32px; border-radius: var(--radius-md); max-width: 320px; text-align: left; box-shadow: 0 4px 20px rgba(0,0,0,0.03);">
+            <div style="color: var(--gold); margin-bottom: 12px;">★★★★★</div>
+            <p style="font-size: 0.95rem; color: var(--gray-700); font-style: italic; line-height: 1.6; margin-bottom: 20px;">"Em breve, as experiências exclusivas dos nossos clientes mais exigentes estarão destacadas aqui."</p>
+            <div style="font-weight: 600; font-size: 0.85rem; color: var(--black);">- Cliente VIP</div>
+          </div>
+          <div style="background: var(--white); border: 1px solid var(--gray-200); padding: 32px; border-radius: var(--radius-md); max-width: 320px; text-align: left; box-shadow: 0 4px 20px rgba(0,0,0,0.03);">
+            <div style="color: var(--gold); margin-bottom: 12px;">★★★★★</div>
+            <p style="font-size: 0.95rem; color: var(--gray-700); font-style: italic; line-height: 1.6; margin-bottom: 20px;">"Um espaço reservado para celebrar a confiança e a sofisticação da nossa comunidade."</p>
+            <div style="font-weight: 600; font-size: 0.85rem; color: var(--black);">- Cliente VIP</div>
+          </div>
+        </div>
       </section>
     </div>
   `;

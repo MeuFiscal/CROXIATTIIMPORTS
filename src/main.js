@@ -8,6 +8,7 @@ import './css/components.css';
 import { registerRoute, initRouter } from './router.js';
 import { renderHeader } from './components/header.js';
 import { renderNavbar } from './components/navbar.js';
+import { renderFooter } from './components/footer.js';
 
 const app = document.getElementById('app');
 
@@ -28,12 +29,16 @@ function withShell(renderFn) {
     if (!contentEl) {
       contentEl = document.createElement('main');
       contentEl.id = 'page-content';
-      contentEl.style.cssText = 'padding-bottom:24px';
+      contentEl.style.cssText = 'padding-bottom:24px; min-height: 60vh;';
       app.appendChild(contentEl);
     }
     contentEl.innerHTML = '';
 
     const result = await renderFn(contentEl, path);
+    
+    // Ensure footer exists
+    renderFooter(app);
+    
     return result;
   };
 }
