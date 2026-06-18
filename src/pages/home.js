@@ -58,21 +58,20 @@ export async function renderHome(container) {
         <div id="load-more-wrap" style="text-align:center;margin-top:32px"></div>
       </section>
 
-      <!-- Social Proof (Placeholder) -->
-      <section class="social-proof-section container" style="padding: 40px 20px; border-top: 1px solid var(--gray-200); text-align: center; margin-top: 20px;">
-        <div style="font-size: 0.78rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px;">Experiência Croxiatti</div>
-        <h2 style="font-family: var(--font-serif); font-size: 1.8rem; font-weight: 500; color: var(--black); margin-bottom: 32px;">O que nossos clientes dizem</h2>
-        <div style="display: flex; gap: 24px; justify-content: center; flex-wrap: wrap;">
-          <!-- Empty luxurious placeholders for future reviews -->
-          <div style="background: var(--white); border: 1px solid var(--gray-200); padding: 32px; border-radius: var(--radius-md); max-width: 320px; text-align: left; box-shadow: 0 4px 20px rgba(0,0,0,0.03);">
-            <div style="color: var(--gold); margin-bottom: 12px;">★★★★★</div>
-            <p style="font-size: 0.95rem; color: var(--gray-700); font-style: italic; line-height: 1.6; margin-bottom: 20px;">"Em breve, as experiências exclusivas dos nossos clientes mais exigentes estarão destacadas aqui."</p>
-            <div style="font-weight: 600; font-size: 0.85rem; color: var(--black);">- Cliente VIP</div>
+      <!-- Social Proof -->
+      <section class="social-proof-section container" style="padding: 20px 20px 40px; border-top: 1px solid var(--gray-200); text-align: center; margin-top: 20px;">
+        <div style="font-size: 0.78rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin-bottom: 8px;">Experiência Croxiatti</div>
+        <h2 style="font-family: var(--font-serif); font-size: 1.6rem; font-weight: 500; color: var(--black); margin-bottom: 24px;">O que nossos clientes dizem</h2>
+        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+          <div style="background: var(--white); border: 1px solid var(--gray-200); padding: 20px; border-radius: var(--radius-md); max-width: 280px; width: 100%; text-align: left; box-shadow: 0 4px 12px rgba(0,0,0,0.02);">
+            <div style="color: var(--gold); margin-bottom: 8px; font-size: 0.9rem;">★★★★★</div>
+            <p style="font-size: 0.88rem; color: var(--gray-700); font-style: italic; line-height: 1.5; margin-bottom: 12px;">"Perfumes de otima qualidade."</p>
+            <div style="font-weight: 600; font-size: 0.8rem; color: var(--black);">- Cliente</div>
           </div>
-          <div style="background: var(--white); border: 1px solid var(--gray-200); padding: 32px; border-radius: var(--radius-md); max-width: 320px; text-align: left; box-shadow: 0 4px 20px rgba(0,0,0,0.03);">
-            <div style="color: var(--gold); margin-bottom: 12px;">★★★★★</div>
-            <p style="font-size: 0.95rem; color: var(--gray-700); font-style: italic; line-height: 1.6; margin-bottom: 20px;">"Um espaço reservado para celebrar a confiança e a sofisticação da nossa comunidade."</p>
-            <div style="font-weight: 600; font-size: 0.85rem; color: var(--black);">- Cliente VIP</div>
+          <div style="background: var(--white); border: 1px solid var(--gray-200); padding: 20px; border-radius: var(--radius-md); max-width: 280px; width: 100%; text-align: left; box-shadow: 0 4px 12px rgba(0,0,0,0.02);">
+            <div style="color: var(--gold); margin-bottom: 8px; font-size: 0.9rem;">★★★★★</div>
+            <p style="font-size: 0.88rem; color: var(--gray-700); font-style: italic; line-height: 1.5; margin-bottom: 12px;">"Atendimento otimo e mercadorias de qualidade."</p>
+            <div style="font-weight: 600; font-size: 0.8rem; color: var(--black);">- Cliente</div>
           </div>
         </div>
       </section>

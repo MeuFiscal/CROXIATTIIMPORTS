@@ -76,23 +76,21 @@ export function renderHeader(app) {
       } else {
         // Fallback para manter as originais visualmente se o banco estiver vazio
         catContainer.innerHTML = `
-          <a href="#/search?q=perfume" class="cat-link">Perfumes</a>
-          <a href="#/search?q=skincare" class="cat-link">Skincare</a>
-          <a href="#/search?q=cabelo" class="cat-link">Cabelos</a>
-          <a href="#/search?q=corpo" class="cat-link">Corpo e Banho</a>
-          <a href="#/search?q=maquiagem" class="cat-link">Maquiagem</a>
-          <a href="#/search?q=presente" class="cat-link text-gold" style="font-weight: 600;">✦ Kits & Presentes</a>
+          <a href="#/search?q=perfume" class="cat-link">PERFUMES</a>
+          <a href="#/search?q=skincare" class="cat-link">SKINCARE</a>
+          <a href="#/search?q=cabelo" class="cat-link">CABELOS</a>
+          <a href="#/search?q=corpo" class="cat-link">CORPO E BANHO</a>
+          <a href="#/search?q=maquiagem" class="cat-link">MAQUIAGEM</a>
         `;
       }
     }).catch(() => {
         const catContainer = headerElement.querySelector('#header-categories-inner');
         catContainer.innerHTML = `
-          <a href="#/search?q=perfume" class="cat-link">Perfumes</a>
-          <a href="#/search?q=skincare" class="cat-link">Skincare</a>
-          <a href="#/search?q=cabelo" class="cat-link">Cabelos</a>
-          <a href="#/search?q=corpo" class="cat-link">Corpo e Banho</a>
-          <a href="#/search?q=maquiagem" class="cat-link">Maquiagem</a>
-          <a href="#/search?q=presente" class="cat-link text-gold" style="font-weight: 600;">✦ Kits & Presentes</a>
+          <a href="#/search?q=perfume" class="cat-link">PERFUMES</a>
+          <a href="#/search?q=skincare" class="cat-link">SKINCARE</a>
+          <a href="#/search?q=cabelo" class="cat-link">CABELOS</a>
+          <a href="#/search?q=corpo" class="cat-link">CORPO E BANHO</a>
+          <a href="#/search?q=maquiagem" class="cat-link">MAQUIAGEM</a>
         `;
     });
 

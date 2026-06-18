@@ -117,8 +117,15 @@ export async function renderAdminProducts(container) {
 }
 
 // ---- Product Form Modal ----
-function openProductForm(produto, onSave) {
+async function openProductForm(produto, onSave) {
   const isEdit = !!produto;
+  
+  // Load categories
+  const { data: cats } = await supabase.from('categorias').select('id, nome').order('ordem', { ascending: true });
+  const catOptions = (cats || []).map(c => 
+    `<option value="${c.id}" ${produto?.categoria_id === c.id ? 'selected' : ''}>${c.nome}</option>`
+  ).join('');
+
   const body = `
     <form id="prod-form" novalidate style="display:flex;flex-direction:column;gap:16px">
       <div class="form-group">
@@ -152,6 +159,7 @@ function openProductForm(produto, onSave) {
           <label class="form-label" for="p-categoria">Categoria</label>
           <select class="form-input" id="p-categoria" style="padding:10px 14px; background:var(--gray-50); border:1px solid var(--gray-200); border-radius:8px;">
             <option value="">Sem categoria</option>
+            ${catOptions}
           </select>
         </div>
         <div class="form-group">
