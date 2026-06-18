@@ -159,8 +159,8 @@ export async function renderAdminDestaques(container) {
     const openCropModal = (file, onCropComplete) => {
       const url = URL.createObjectURL(file);
       const body = `
-        <div style="height:50vh;width:100%;background:#000;display:flex;align-items:center;justify-content:center;position:relative;">
-          <img id="crop-img-modal" src="${url}" style="max-width:100%;max-height:100%;display:block;opacity:0" />
+        <div style="max-height:60vh;overflow:hidden;background:#000">
+          <img id="crop-img-modal" src="${url}" style="max-width:100%;display:block;" />
         </div>
       `;
       const footer = `
@@ -186,28 +186,33 @@ export async function renderAdminDestaques(container) {
           document.head.appendChild(link);
         }
 
-        const cropper = new Cropper(img, {
-          aspectRatio: 3, // 1200 / 400
-          viewMode: 2,
-          dragMode: 'move',
-          autoCropArea: 1,
-          background: false,
-          ready() { img.style.opacity = '1'; }
-        });
+        setTimeout(() => {
+          const cropper = new Cropper(img, {
+            aspectRatio: 3, // 1200 / 400
+            viewMode: 1,
+            dragMode: 'move',
+            autoCropArea: 1,
+            background: false,
+            movable: true,
+            zoomable: true,
+            rotatable: false,
+            scalable: false
+          });
 
-        document.getElementById('crop-cancel-btn').addEventListener('click', () => {
-          cropper.destroy();
-          close();
-        });
-
-        document.getElementById('crop-save-btn').addEventListener('click', () => {
-          const canvas = cropper.getCroppedCanvas({ maxWidth: 2400, maxHeight: 800, imageSmoothingQuality: 'high' });
-          canvas.toBlob(blob => {
+          document.getElementById('crop-cancel-btn').addEventListener('click', () => {
             cropper.destroy();
             close();
-            onCropComplete(blob, file.name);
-          }, 'image/jpeg', 0.9);
-        });
+          });
+
+          document.getElementById('crop-save-btn').addEventListener('click', () => {
+            const canvas = cropper.getCroppedCanvas({ maxWidth: 2400, maxHeight: 800, imageSmoothingQuality: 'high' });
+            canvas.toBlob(blob => {
+              cropper.destroy();
+              close();
+              onCropComplete(blob, file.name);
+            }, 'image/jpeg', 0.9);
+          });
+        }, 100);
       });
     };
 
