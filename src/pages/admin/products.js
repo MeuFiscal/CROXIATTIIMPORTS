@@ -215,19 +215,7 @@ async function openProductForm(produto, onSave) {
   });
 
   // Fetch categories and populate select
-  supabase.from('categorias').select('id, nome').order('ordem', { ascending: true })
-    .then(({ data }) => {
-      if (data) {
-        const sel = document.getElementById('p-categoria');
-        data.forEach(cat => {
-          const opt = document.createElement('option');
-          opt.value = cat.id;
-          opt.textContent = cat.nome;
-          if (produto?.categoria_id === cat.id) opt.selected = true;
-          sel.appendChild(opt);
-        });
-      }
-    });
+  // (Categories are now fetched directly inside openProductForm async)
 
   document.getElementById('prod-cancel').addEventListener('click', close);
 
@@ -295,12 +283,10 @@ async function openProductForm(produto, onSave) {
       saveBtn.innerHTML = '<span class="loader-ring" style="width:16px;height:16px;border-width:2px"></span>';
 
     let imgUrls = {
-      1: produto?.imagem_url || null,
-      2: produto?.imagem_url_2 || null,
-      3: produto?.imagem_url_3 || null
+      1: produto?.imagem_url || null
     };
 
-    for (let i of [1, 2, 3]) {
+    for (let i of [1]) {
       if (imgState[i].croppedBlob) {
         const fileExt = imgState[i].croppedBlob.name.split('.').pop();
         const fileName = `produto_${i}_${Date.now()}.${fileExt}`;
@@ -328,12 +314,9 @@ async function openProductForm(produto, onSave) {
       quantidade: parseInt(document.getElementById('p-qty').value) || 0,
       descricao: document.getElementById('p-desc').value.trim() || null,
       destaque: document.getElementById('p-destaque').checked,
-      mais_encomendado: document.getElementById('p-mais-encomendado').checked,
       apenas_encomenda: document.getElementById('p-encomenda').checked,
       categoria_id: catVal ? catVal : null,
       imagem_url: imgUrls[1],
-      imagem_url_2: imgUrls[2],
-      imagem_url_3: imgUrls[3],
       updated_at: new Date().toISOString()
     };
 

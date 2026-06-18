@@ -77,8 +77,8 @@ export async function renderHome(container) {
       </section>
 
       <!-- Trust Section -->
-      <section style="background: var(--black); padding: 48px 0; margin-top: 40px;">
-        <div class="container" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 32px; text-align: center;">
+      <section style="background: var(--black); padding: 24px 0; margin-top: 0px;">
+        <div class="container" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; text-align: center;">
           <div style="flex: 1; min-width: 150px; display: flex; flex-direction: column; align-items: center; gap: 12px;">
             <div style="color: var(--gold); background: rgba(200,155,60,0.1); width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
