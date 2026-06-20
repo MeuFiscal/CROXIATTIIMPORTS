@@ -26,6 +26,16 @@ export async function renderAccount(container) {
     return;
   }
 
+  // Pegar os dados de endereço do auth metadata (onde eles estão salvos)
+  const meta = session.user.user_metadata || {};
+  const initialCep = meta.cep || '';
+  const initialRua = meta.rua || '';
+  const initialNum = meta.numero || '';
+  const initialComp = meta.complemento || '';
+  const initialBairro = meta.bairro || '';
+  const initialCidade = meta.cidade || '';
+  const initialEstado = meta.estado || '';
+
   container.innerHTML = '';
   container.className = 'page-enter';
 
@@ -53,8 +63,8 @@ export async function renderAccount(container) {
         </div>
       </div>
 
-      <h3 style="font-size: 1.05rem; margin-bottom: 16px; color: var(--gray-800);">Dados Pessoais</h3>
       <form id="profile-form" style="display: flex; flex-direction: column; gap: 16px;">
+        <h3 style="font-size: 1.05rem; color: var(--gray-800);">Dados Pessoais</h3>
         <div class="form-group" style="text-align: left;">
           <label style="display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 6px; color: var(--gray-700);">Nome Completo</label>
           <input type="text" id="prof-nome" value="${profile.nome || ''}" required style="width: 100%; padding: 12px 16px; border: 1.5px solid var(--gray-200); border-radius: var(--radius-md); font-size: 1rem;" />
@@ -68,6 +78,43 @@ export async function renderAccount(container) {
           <div class="form-group" style="flex: 1; min-width: 200px; text-align: left;">
             <label style="display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 6px; color: var(--gray-700);">Telefone Fixo (opcional)</label>
             <input type="tel" id="prof-telefone" value="${profile.telefone || ''}" style="width: 100%; padding: 12px 16px; border: 1.5px solid var(--gray-200); border-radius: var(--radius-md); font-size: 1rem;" />
+          </div>
+        </div>
+
+        <h3 style="font-size: 1.05rem; color: var(--gray-800); margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--gray-100);">Endereço de Entrega</h3>
+        
+        <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div>
+            <label style="display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 6px; color: var(--gray-700);">CEP</label>
+            <input type="text" id="prof-cep" placeholder="00000-000" value="${initialCep}" style="width: 100%; padding: 12px 16px; border: 1.5px solid var(--gray-200); border-radius: var(--radius-md); font-size: 1rem;" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label style="display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 6px; color: var(--gray-700);">Rua</label>
+          <input type="text" id="prof-rua" placeholder="Nome da rua" value="${initialRua}" style="width: 100%; padding: 12px 16px; border: 1.5px solid var(--gray-200); border-radius: var(--radius-md); font-size: 1rem;" />
+        </div>
+        <div class="form-group" style="display: grid; grid-template-columns: 1fr 2fr; gap: 16px;">
+          <div>
+            <label style="display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 6px; color: var(--gray-700);">Número</label>
+            <input type="text" id="prof-num" placeholder="Ex: 123" value="${initialNum}" style="width: 100%; padding: 12px 16px; border: 1.5px solid var(--gray-200); border-radius: var(--radius-md); font-size: 1rem;" />
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 6px; color: var(--gray-700);">Complemento</label>
+            <input type="text" id="prof-comp" placeholder="Apto, Bloco..." value="${initialComp}" style="width: 100%; padding: 12px 16px; border: 1.5px solid var(--gray-200); border-radius: var(--radius-md); font-size: 1rem;" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label style="display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 6px; color: var(--gray-700);">Bairro</label>
+          <input type="text" id="prof-bairro" placeholder="Seu bairro" value="${initialBairro}" style="width: 100%; padding: 12px 16px; border: 1.5px solid var(--gray-200); border-radius: var(--radius-md); font-size: 1rem;" />
+        </div>
+        <div class="form-group" style="display: grid; grid-template-columns: 2fr 1fr; gap: 16px;">
+          <div>
+            <label style="display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 6px; color: var(--gray-700);">Cidade</label>
+            <input type="text" id="prof-cidade" placeholder="Sua cidade" value="${initialCidade}" style="width: 100%; padding: 12px 16px; border: 1.5px solid var(--gray-200); border-radius: var(--radius-md); font-size: 1rem;" />
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 6px; color: var(--gray-700);">Estado</label>
+            <input type="text" id="prof-estado" placeholder="Ex: SP" value="${initialEstado}" style="width: 100%; padding: 12px 16px; border: 1.5px solid var(--gray-200); border-radius: var(--radius-md); font-size: 1rem;" />
           </div>
         </div>
 
@@ -101,6 +148,29 @@ export async function renderAccount(container) {
 
   container.appendChild(page);
 
+  // CEP Mask and ViaCEP lookup
+  const cepInput = page.querySelector('#prof-cep');
+  cepInput.addEventListener('input', async (e) => {
+    let v = e.target.value.replace(/\D/g, '').slice(0, 8);
+    if (v.length > 5) v = v.replace(/^(\d{5})(\d)/, '$1-$2');
+    e.target.value = v;
+
+    if (v.length === 9) {
+      const cepRaw = v.replace(/\D/g, '');
+      try {
+        const res = await fetch(`https://viacep.com.br/ws/${cepRaw}/json/`);
+        const data = await res.json();
+        if (!data.erro) {
+          page.querySelector('#prof-rua').value = data.logradouro;
+          page.querySelector('#prof-bairro').value = data.bairro;
+          page.querySelector('#prof-cidade').value = data.localidade;
+          page.querySelector('#prof-estado').value = data.uf;
+          page.querySelector('#prof-num').focus();
+        }
+      } catch (err) {}
+    }
+  });
+
   // Handlers
   const logoutBtn = page.querySelector('#btn-logout');
   logoutBtn.addEventListener('click', async () => {
@@ -117,13 +187,28 @@ export async function renderAccount(container) {
     btnSave.disabled = true;
     btnSave.textContent = 'SALVANDO...';
 
-    const updates = {
-      nome: page.querySelector('#prof-nome').value,
-      whatsapp: page.querySelector('#prof-whatsapp').value,
-      telefone: page.querySelector('#prof-telefone').value
-    };
+    const nome = page.querySelector('#prof-nome').value;
+    const whatsapp = page.querySelector('#prof-whatsapp').value;
+    const telefone = page.querySelector('#prof-telefone').value;
 
-    const { error } = await updateProfile(updates);
+    const cep = page.querySelector('#prof-cep').value;
+    const rua = page.querySelector('#prof-rua').value;
+    const numero = page.querySelector('#prof-num').value;
+    const complemento = page.querySelector('#prof-comp').value;
+    const bairro = page.querySelector('#prof-bairro').value;
+    const cidade = page.querySelector('#prof-cidade').value;
+    const estado = page.querySelector('#prof-estado').value;
+
+    // Atualiza tabela profiles (compatibilidade)
+    const { error } = await updateProfile({ nome, whatsapp, telefone });
+
+    // Atualiza auth user_metadata para salvar endereço e ficar disponivel no checkout
+    const { supabase } = await import('../supabase.js');
+    await supabase.auth.updateUser({
+      data: {
+        nome, whatsapp, telefone, cep, rua, numero, complemento, bairro, cidade, estado
+      }
+    });
 
     btnSave.disabled = false;
     btnSave.textContent = 'SALVAR ALTERAÇÕES';
@@ -148,7 +233,6 @@ export async function renderAccount(container) {
     btnUpdatePwd.disabled = true;
     btnUpdatePwd.textContent = 'ATUALIZANDO...';
     
-    // Using supabase auth to update user directly
     const { supabase } = await import('../supabase.js');
     const { error } = await supabase.auth.updateUser({ password: newPassword });
     

@@ -2,7 +2,7 @@
 // CHECKOUT PAGE — Finalização do pedido
 // ======================================================
 import { getCart, getCartTotal, clearCart, saveOrderSession } from '../store.js';
-import { supabase, getCustomerSession, getProfile } from '../supabase.js';
+import { supabase, getCustomerSession } from '../supabase.js';
 import { navigate } from '../router.js';
 import { formatCurrency } from '../components/productCard.js';
 import { showToast } from '../components/toast.js';
@@ -14,7 +14,40 @@ export async function renderCheckout(container) {
   const cart = getCart();
   if (cart.length === 0) { navigate('/cart'); return; }
 
+  // 1. Verificação de sessão
+  const session = await getCustomerSession();
+  if (!session) {
+    container.innerHTML = `
+      <div class="container checkout-page" style="max-width: 460px; margin: 40px auto; text-align: center;">
+        <div class="auth-card" style="background: var(--white); padding: 40px 24px; border-radius: var(--radius-xl); box-shadow: var(--shadow-md);">
+          <div style="font-size: 3rem; margin-bottom: 16px;">🔐</div>
+          <h2 style="font-family: var(--font-serif); font-size: 1.6rem; color: var(--gold); margin-bottom: 12px;">Acesse sua Conta</h2>
+          <p style="color: var(--gray-500); font-size: 1rem; line-height: 1.5; margin-bottom: 32px;">Para finalizar sua encomenda de forma rápida e segura, precisamos que você faça login.</p>
+          
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <a href="#/login?redirect=checkout" class="btn btn-primary btn-lg" style="width: 100%;">Já tenho conta: Entrar</a>
+            <div style="margin: 8px 0; color: var(--gray-400); font-size: 0.9rem;">ou</div>
+            <a href="#/login?tab=register&redirect=checkout" class="btn btn-outline btn-lg" style="width: 100%;">Primeira vez: Criar Conta</a>
+          </div>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
   const total = getCartTotal();
+  const userId = session.user.id;
+  const profile = session.user.user_metadata || {};
+
+  const initialNome = profile.nome || '';
+  const initialTel = profile.whatsapp || profile.telefone || '';
+  const initialCep = profile.cep || '';
+  const initialRua = profile.rua || '';
+  const initialNum = profile.numero || '';
+  const initialComp = profile.complemento || '';
+  const initialBairro = profile.bairro || '';
+  const initialCidade = profile.cidade || '';
+  const initialEstado = profile.estado || '';
 
   container.innerHTML = `
     <div class="container checkout-page">
@@ -30,19 +63,53 @@ export async function renderCheckout(container) {
       <form class="checkout-form" id="checkout-form" novalidate>
         <div class="form-group">
           <label class="form-label" for="co-nome">Nome Completo *</label>
-          <input class="form-input" type="text" id="co-nome" placeholder="Seu nome completo" autocomplete="name" required />
+          <input class="form-input" type="text" id="co-nome" placeholder="Seu nome completo" value="${initialNome}" autocomplete="name" required />
           <span class="form-error" id="err-nome"></span>
         </div>
         <div class="form-group">
           <label class="form-label" for="co-tel">WhatsApp *</label>
-          <input class="form-input" type="tel" id="co-tel" placeholder="(44) 99999-9999" autocomplete="tel" required />
+          <input class="form-input" type="tel" id="co-tel" placeholder="(44) 99999-9999" value="${initialTel}" autocomplete="tel" required />
           <span class="form-error" id="err-tel"></span>
         </div>
-        <div class="form-group">
-          <label class="form-label" for="co-end">Endereço Completo *</label>
-          <textarea class="form-input" id="co-end" placeholder="Rua, número, bairro, cidade, estado, CEP" rows="3" required></textarea>
-          <span class="form-error" id="err-end"></span>
+
+        <h3 style="font-family:var(--font-serif);font-size:1.1rem;font-weight:500;margin: 24px 0 16px; border-bottom: 1px solid var(--gray-200); padding-bottom: 8px;">Endereço de Entrega</h3>
+        
+        <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div>
+            <label class="form-label" for="co-cep">CEP *</label>
+            <input class="form-input" type="text" id="co-cep" placeholder="00000-000" value="${initialCep}" required />
+            <span class="form-error" id="err-cep"></span>
+          </div>
         </div>
+        <div class="form-group">
+          <label class="form-label" for="co-rua">Rua *</label>
+          <input class="form-input" type="text" id="co-rua" placeholder="Nome da rua" value="${initialRua}" required />
+        </div>
+        <div class="form-group" style="display: grid; grid-template-columns: 1fr 2fr; gap: 16px;">
+          <div>
+            <label class="form-label" for="co-num">Número *</label>
+            <input class="form-input" type="text" id="co-num" placeholder="Ex: 123" value="${initialNum}" required />
+          </div>
+          <div>
+            <label class="form-label" for="co-comp">Complemento</label>
+            <input class="form-input" type="text" id="co-comp" placeholder="Apto, Bloco..." value="${initialComp}" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="co-bairro">Bairro *</label>
+          <input class="form-input" type="text" id="co-bairro" placeholder="Seu bairro" value="${initialBairro}" required />
+        </div>
+        <div class="form-group" style="display: grid; grid-template-columns: 2fr 1fr; gap: 16px;">
+          <div>
+            <label class="form-label" for="co-cidade">Cidade *</label>
+            <input class="form-input" type="text" id="co-cidade" placeholder="Sua cidade" value="${initialCidade}" required />
+          </div>
+          <div>
+            <label class="form-label" for="co-estado">Estado *</label>
+            <input class="form-input" type="text" id="co-estado" placeholder="Ex: SP" value="${initialEstado}" required />
+          </div>
+        </div>
+        <span class="form-error" id="err-end"></span>
 
         <div class="checkout-summary">
           <h3 style="font-family:var(--font-serif);font-size:1.1rem;font-weight:500;margin-bottom:16px">Resumo do Pedido</h3>
@@ -79,19 +146,57 @@ export async function renderCheckout(container) {
     telInput.value = v;
   });
 
+  // CEP Mask and ViaCEP lookup
+  const cepInput = container.querySelector('#co-cep');
+  cepInput.addEventListener('input', async (e) => {
+    let v = e.target.value.replace(/\D/g, '').slice(0, 8);
+    if (v.length > 5) v = v.replace(/^(\d{5})(\d)/, '$1-$2');
+    e.target.value = v;
+
+    if (v.length === 9) {
+      const cepRaw = v.replace(/\D/g, '');
+      try {
+        const res = await fetch(`https://viacep.com.br/ws/${cepRaw}/json/`);
+        const data = await res.json();
+        if (!data.erro) {
+          container.querySelector('#co-rua').value = data.logradouro;
+          container.querySelector('#co-bairro').value = data.bairro;
+          container.querySelector('#co-cidade').value = data.localidade;
+          container.querySelector('#co-estado').value = data.uf;
+          container.querySelector('#co-num').focus();
+        }
+      } catch (err) {
+        console.error("ViaCEP erro", err);
+      }
+    }
+  });
+
   // Submit
   container.querySelector('#checkout-form').addEventListener('submit', async e => {
     e.preventDefault();
     const nome = container.querySelector('#co-nome').value.trim();
     const tel = telInput.value.trim();
-    const end = container.querySelector('#co-end').value.trim();
+    
+    const cep = cepInput.value.trim();
+    const rua = container.querySelector('#co-rua').value.trim();
+    const num = container.querySelector('#co-num').value.trim();
+    const comp = container.querySelector('#co-comp').value.trim();
+    const bairro = container.querySelector('#co-bairro').value.trim();
+    const cidade = container.querySelector('#co-cidade').value.trim();
+    const estado = container.querySelector('#co-estado').value.trim();
 
     let valid = true;
     const setErr = (id, msg) => { document.getElementById(id).textContent = msg; if (msg) valid = false; };
 
     setErr('err-nome', nome.length < 3 ? 'Informe seu nome completo' : '');
     setErr('err-tel', tel.replace(/\D/g,'').length < 10 ? 'Informe um telefone válido' : '');
-    setErr('err-end', end.length < 10 ? 'Informe o endereço completo' : '');
+    setErr('err-cep', cep.replace(/\D/g,'').length < 8 ? 'CEP inválido' : '');
+    
+    if (!rua || !num || !bairro || !cidade || !estado) {
+      setErr('err-end', 'Preencha todos os campos obrigatórios do endereço');
+    } else {
+      setErr('err-end', '');
+    }
 
     if (!valid) return;
 
@@ -100,29 +205,32 @@ export async function renderCheckout(container) {
     btn.innerHTML = '<span class="loader-ring" style="width:20px;height:20px;border-width:2px"></span> Processando...';
 
     try {
-      // Check session
-      const session = await getCustomerSession();
-      const userId = session ? session.user.id : null;
+      const fullEnd = `${rua}, ${num}${comp ? ' - ' + comp : ''} - ${bairro}, ${cidade}/${estado} - CEP: ${cep}`;
 
-      // Upsert cliente (still used for old compatibility / reference)
+      // Update user_metadata with the new address so it's saved for next time
+      await supabase.auth.updateUser({
+        data: {
+          nome, whatsapp: tel, cep, rua, numero: num, complemento: comp, bairro, cidade, estado
+        }
+      });
+
+      // Upsert cliente in public.clientes (compatibility for orders)
       let { data: cliente } = await supabase
         .from('clientes')
         .select('id')
-        .eq('telefone', tel.replace(/\D/g,''))
+        .eq('user_id', userId)
         .single();
 
       if (!cliente) {
         const { data: novo, error } = await supabase
           .from('clientes')
-          .insert({ nome, telefone: tel.replace(/\D/g,''), endereco: end, user_id: userId })
+          .insert({ nome, telefone: tel.replace(/\D/g,''), endereco: fullEnd, user_id: userId })
           .select('id')
           .single();
         if (error) throw error;
         cliente = novo;
       } else {
-        const updateData = { endereco: end };
-        if (userId) updateData.user_id = userId;
-        await supabase.from('clientes').update(updateData).eq('id', cliente.id);
+        await supabase.from('clientes').update({ endereco: fullEnd, telefone: tel.replace(/\D/g,''), nome }).eq('id', cliente.id);
       }
 
       // Criar pedido — detecta status com base nos itens
@@ -130,8 +238,7 @@ export async function renderCheckout(container) {
       const hasMixed = cart.some(i => (i.qty_encomenda || 0) > 0) && cart.some(i => (i.qty_estoque || i.quantidade) > 0);
       const initialStatus = hasEncomendaOnly ? 'encomenda' : 'pendente';
 
-      const pedidoData = { cliente_id: cliente.id, valor_total: total, status: initialStatus };
-      if (userId) pedidoData.user_id = userId;
+      const pedidoData = { cliente_id: cliente.id, valor_total: total, status: initialStatus, user_id: userId };
 
       const { data: pedido, error: pedErr } = await supabase
         .from('pedidos')
@@ -164,7 +271,7 @@ export async function renderCheckout(container) {
 
       saveOrderSession({ nome, tel, pedido_id: pedido.id, total, cart });
       clearCart();
-      renderSuccess(container, { nome, tel, total, cart });
+      renderSuccess(container, { nome, tel, total, cart, fullEnd });
 
     } catch (err) {
       console.error(err);
@@ -175,9 +282,7 @@ export async function renderCheckout(container) {
   });
 }
 
-function renderSuccess(container, { nome, tel, total, cart }) {
-  const rawTel = tel.replace(/\D/g, '');
-
+function renderSuccess(container, { nome, tel, total, cart, fullEnd }) {
   // Montar lista de itens com split estoque x encomenda
   const linhasItens = cart.map(i => {
     const qtyEst = i.qty_estoque !== undefined ? i.qty_estoque : (i.apenas_encomenda ? 0 : i.quantidade);
@@ -199,6 +304,7 @@ function renderSuccess(container, { nome, tel, total, cart }) {
     `Olá! Sou ${nome}.\n\nGostaria de confirmar meu pedido na *Croxiatti Imports*:\n\n` +
     linhasItens.join('\n') +
     `\n\n*Total: ${formatCurrency(total)}*` +
+    `\n*Endereço:* ${fullEnd}` +
     (temEncomenda ? `\n\n⚠️ _Alguns itens são por encomenda — aguardo prazo de entrega._` : '') +
     `\n\nAguardo a confirmação. 🙏`
   );
