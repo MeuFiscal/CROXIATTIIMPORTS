@@ -3,10 +3,10 @@ import { navigate } from '../router.js';
 import { showToast } from '../components/toast.js';
 
 export async function renderLogin(container) {
-  // Se já logado, redireciona para a conta
+  // Se já logado, redireciona para a home
   const session = await getCustomerSession();
   if (session) {
-    navigate('/account');
+    navigate('/');
     return;
   }
 
@@ -193,9 +193,9 @@ export async function renderLogin(container) {
       btnLoginSubmit.textContent = 'ENTRAR';
     } else {
       showToast('Login realizado com sucesso!', 'success');
-      // Redireciona de volta ou para a conta
+      // Redireciona para a home
       setTimeout(() => {
-        window.location.hash = '/account';
+        window.location.hash = '/';
         window.location.reload(); // Para atualizar header/drawer
       }, 500);
     }
@@ -229,7 +229,7 @@ export async function renderLogin(container) {
     } else {
       showToast('Conta criada com sucesso!', 'success');
       setTimeout(() => {
-        window.location.hash = '/account';
+        window.location.hash = '/';
         window.location.reload();
       }, 500);
     }

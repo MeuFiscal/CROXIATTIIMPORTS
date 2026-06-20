@@ -75,22 +75,40 @@ export async function renderResetPassword(container) {
     btnSubmit.disabled = true;
     btnSubmit.textContent = 'SALVANDO...';
 
-    // Supabase auth set session from URL automatically handles the recovery token
-    // So we just need to update the user password
-    const { error } = await supabase.auth.updateUser({
-      password: newPassword
-    });
+    // Extrai token_hash da URL caso o usuário esteja usando um template de email customizado
+    // para burlar os bloqueios de antivírus do Outlook.
+    const urlObj = new URL(window.location.href.replace('#/', ''));
+    const tokenHash = urlObj.searchParams.get('token_hash');
 
-    if (error) {
-      showToast('Erro ao redefinir senha. O link pode ter expirado.', 'error');
-      btnSubmit.disabled = false;
-      btnSubmit.textContent = 'SALVAR NOVA SENHA';
-    } else {
+    try {
+      if (tokenHash) {
+        // Se temos o token_hash, precisamos primeiro verificar a OTP para "logar" o usuário
+        const { error: verifyError } = await supabase.auth.verifyOtp({
+          token_hash: tokenHash,
+          type: 'recovery'
+        });
+        
+        if (verifyError) throw verifyError;
+      }
+
+      // Agora que o usuário está "logado" pela recuperação, atualizamos a senha
+      const { error: updateError } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+
+      if (updateError) throw updateError;
+
       showToast('Senha redefinida com sucesso!', 'success');
       setTimeout(() => {
         window.location.hash = '/account';
         window.location.reload();
       }, 1500);
+
+    } catch (err) {
+      console.error(err);
+      showToast('Erro ao redefinir senha. O link pode ter expirado.', 'error');
+      btnSubmit.disabled = false;
+      btnSubmit.textContent = 'SALVAR NOVA SENHA';
     }
   });
 }
