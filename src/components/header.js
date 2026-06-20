@@ -51,8 +51,16 @@ export function renderHeader(app) {
 
       <!-- Ícones na Direita -->
       <div class="header-actions">
-        <a href="#/my-orders" class="header-nav-link hide-mobile" id="header-orders-btn">Meus Pedidos</a>
-        <a href="#/admin" class="header-nav-link hide-mobile" id="header-admin-btn" style="display: none;">Painel Admin</a>
+        <!-- Links de Visitante -->
+        <a href="#/login" class="header-nav-link hide-mobile" id="header-login-btn">Entrar</a>
+        <a href="#/login?tab=register" class="header-nav-link hide-mobile" id="header-register-btn" style="color: var(--gold);">Criar Conta</a>
+        
+        <!-- Links de Cliente Logado -->
+        <a href="#/account" class="header-nav-link hide-mobile" id="header-account-btn" style="display: none;">Minha Conta</a>
+        <a href="#/my-orders" class="header-nav-link hide-mobile" id="header-orders-btn" style="display: none;">Meus Pedidos</a>
+        
+        <!-- Link de Admin -->
+        <a href="#/admin/dashboard" class="header-nav-link hide-mobile" id="header-admin-btn" style="display: none; color: var(--success);">Painel Admin</a>
         
         <button class="header-btn hide-mobile" id="header-fav-btn" aria-label="Favoritos" title="Favoritos">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -130,19 +138,41 @@ export function renderHeader(app) {
   // Favorites button
   headerElement.querySelector('#header-fav-btn')?.addEventListener('click', () => navigate('/favorites'));
 
-  // Meus Pedidos button (desktop)
+  // Links Desktop
+  headerElement.querySelector('#header-login-btn')?.addEventListener('click', (e) => { e.preventDefault(); navigate('/login'); });
+  headerElement.querySelector('#header-register-btn')?.addEventListener('click', (e) => { e.preventDefault(); navigate('/login?tab=register'); });
+  headerElement.querySelector('#header-account-btn')?.addEventListener('click', (e) => { e.preventDefault(); navigate('/account'); });
   headerElement.querySelector('#header-orders-btn')?.addEventListener('click', (e) => { e.preventDefault(); navigate('/my-orders'); });
+  headerElement.querySelector('#header-admin-btn')?.addEventListener('click', (e) => { e.preventDefault(); navigate('/admin/dashboard'); });
 
-  // Admin button (desktop)
-  const checkAdmin = async () => {
+  // Auth state check (desktop)
+  const checkAuth = async () => {
     const { getProfile } = await import('../supabase.js');
     const profile = await getProfile();
-    if (profile?.role === 'admin') {
-      const adminBtn = headerElement.querySelector('#header-admin-btn');
-      if (adminBtn) adminBtn.style.display = 'inline-block';
+    
+    const loginBtn = headerElement.querySelector('#header-login-btn');
+    const registerBtn = headerElement.querySelector('#header-register-btn');
+    const accountBtn = headerElement.querySelector('#header-account-btn');
+    const ordersBtn = headerElement.querySelector('#header-orders-btn');
+    const adminBtn = headerElement.querySelector('#header-admin-btn');
+    
+    if (profile) {
+      if (loginBtn) loginBtn.style.display = 'none';
+      if (registerBtn) registerBtn.style.display = 'none';
+      if (accountBtn) accountBtn.style.display = 'inline-block';
+      if (ordersBtn) ordersBtn.style.display = 'inline-block';
+      if (profile.role === 'admin' && adminBtn) {
+        adminBtn.style.display = 'inline-block';
+      }
+    } else {
+      if (loginBtn) loginBtn.style.display = 'inline-block';
+      if (registerBtn) registerBtn.style.display = 'inline-block';
+      if (accountBtn) accountBtn.style.display = 'none';
+      if (ordersBtn) ordersBtn.style.display = 'none';
+      if (adminBtn) adminBtn.style.display = 'none';
     }
   };
-  checkAdmin();
+  checkAuth();
 
   // Search
   const searchInput = headerElement.querySelector('#header-search-input');
