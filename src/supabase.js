@@ -80,7 +80,27 @@ export async function getProfile() {
     .eq('id', session.user.id)
     .single();
 
-  if (error) return null;
+  if (error && error.code !== 'PGRST116') return null; // PGRST116 is 'No rows found'
+  
+  // Se não encontrou o perfil, cria um novo (para usuários antigos ou falha na trigger)
+  if (!data) {
+    const { data: newProfile, error: insertError } = await supabase
+      .from('profiles')
+      .insert({
+        id: session.user.id,
+        nome: session.user.user_metadata?.nome || 'Usuário',
+        email: session.user.email,
+        telefone: session.user.user_metadata?.telefone || '',
+        whatsapp: session.user.user_metadata?.whatsapp || '',
+        role: 'cliente'
+      })
+      .select()
+      .single();
+      
+    if (insertError) return null;
+    return newProfile;
+  }
+
   return data;
 }
 

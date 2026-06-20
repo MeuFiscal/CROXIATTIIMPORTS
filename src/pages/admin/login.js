@@ -7,7 +7,14 @@ import { navigate } from '../../router.js';
 export async function renderAdminLogin(container) {
   // Already logged in?
   const session = await getAdminSession();
-  if (session) { navigate('/admin/dashboard'); return; }
+  if (session) {
+    const { getProfile } = await import('../../supabase.js');
+    const profile = await getProfile();
+    if (profile?.role === 'admin') {
+      navigate('/admin/dashboard');
+      return;
+    }
+  }
 
   document.body.style.padding = '0';
   container.innerHTML = '';
@@ -70,7 +77,18 @@ export async function renderAdminLogin(container) {
       return;
     }
 
-    localStorage.setItem('isAdmin', 'true');
+    const { getProfile, signOutAdmin } = await import('../../supabase.js');
+    const profile = await getProfile();
+
+    if (profile?.role !== 'admin') {
+      await signOutAdmin();
+      errEl.textContent = 'Acesso negado: Sua conta não possui privilégios de administrador.';
+      errEl.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Entrar no Painel';
+      return;
+    }
+
     document.body.style.padding = '';
     navigate('/admin/dashboard');
   });

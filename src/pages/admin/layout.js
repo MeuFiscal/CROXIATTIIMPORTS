@@ -20,8 +20,16 @@ const NAV = [
 
 export async function requireAdmin() {
   const session = await getAdminSession();
-  const isAdmin = localStorage.getItem('isAdmin') === 'true';
-  if (!session || !isAdmin) { navigate('/admin'); return false; }
+  if (!session) { navigate('/admin'); return false; }
+
+  const { getProfile } = await import('../../supabase.js');
+  const profile = await getProfile();
+
+  if (profile?.role !== 'admin') {
+    navigate('/');
+    return false;
+  }
+
   return true;
 }
 
@@ -114,7 +122,6 @@ export function renderAdminLayout(container, title, renderContent) {
   });
 
   container.querySelector('#sidebar-logout-btn').addEventListener('click', async () => {
-    localStorage.removeItem('isAdmin');
     await signOutAdmin();
     document.body.style.padding = '';
     navigate('/admin');

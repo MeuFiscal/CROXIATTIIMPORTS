@@ -52,7 +52,7 @@ export function renderHeader(app) {
       <!-- Ícones na Direita -->
       <div class="header-actions">
         <a href="#/my-orders" class="header-nav-link hide-mobile" id="header-orders-btn">Meus Pedidos</a>
-        <a href="#/admin" class="header-nav-link hide-mobile">Painel Admin</a>
+        <a href="#/admin" class="header-nav-link hide-mobile" id="header-admin-btn" style="display: none;">Painel Admin</a>
         
         <button class="header-btn hide-mobile" id="header-fav-btn" aria-label="Favoritos" title="Favoritos">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -132,6 +132,17 @@ export function renderHeader(app) {
 
   // Meus Pedidos button (desktop)
   headerElement.querySelector('#header-orders-btn')?.addEventListener('click', (e) => { e.preventDefault(); navigate('/my-orders'); });
+
+  // Admin button (desktop)
+  const checkAdmin = async () => {
+    const { getProfile } = await import('../supabase.js');
+    const profile = await getProfile();
+    if (profile?.role === 'admin') {
+      const adminBtn = headerElement.querySelector('#header-admin-btn');
+      if (adminBtn) adminBtn.style.display = 'inline-block';
+    }
+  };
+  checkAdmin();
 
   // Search
   const searchInput = headerElement.querySelector('#header-search-input');

@@ -7,7 +7,6 @@ import './css/components.css';
 
 import { registerRoute, initRouter } from './router.js';
 import { renderHeader } from './components/header.js';
-import { renderNavbar } from './components/navbar.js';
 import { renderFooter } from './components/footer.js';
 
 const app = document.getElementById('app');
@@ -20,9 +19,6 @@ function withShell(renderFn) {
 
     // Ensure header exists
     renderHeader(app);
-
-    // Ensure navbar exists
-    renderNavbar();
 
     // Main content area
     let contentEl = document.getElementById('page-content');
@@ -47,7 +43,6 @@ function withShell(renderFn) {
 function withAdminShell(renderFn) {
   return async (path) => {
     document.getElementById('app-header')?.remove();
-    document.getElementById('app-navbar')?.remove();
 
     let contentEl = document.getElementById('page-content');
     if (!contentEl) {

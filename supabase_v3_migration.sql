@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   email TEXT NOT NULL DEFAULT '',
   telefone TEXT DEFAULT '',
   whatsapp TEXT DEFAULT '',
+  role TEXT DEFAULT 'cliente',
   created_at TIMESTAMPTZ DEFAULT now(),
   updated_at TIMESTAMPTZ DEFAULT now()
 );
@@ -44,13 +45,14 @@ CREATE INDEX IF NOT EXISTS idx_pedidos_user_id ON public.pedidos(user_id);
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO public.profiles (id, nome, email, telefone, whatsapp)
+  INSERT INTO public.profiles (id, nome, email, telefone, whatsapp, role)
   VALUES (
     NEW.id,
     COALESCE(NEW.raw_user_meta_data->>'nome', ''),
     COALESCE(NEW.email, ''),
     COALESCE(NEW.raw_user_meta_data->>'telefone', ''),
-    COALESCE(NEW.raw_user_meta_data->>'whatsapp', '')
+    COALESCE(NEW.raw_user_meta_data->>'whatsapp', ''),
+    'cliente'
   );
   RETURN NEW;
 END;

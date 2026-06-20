@@ -13,7 +13,7 @@ function buildDrawerHTML(profile) {
   const greeting = userName ? `Olá, ${userName}` : 'Faça seu Login';
   const accountLink = userName ? '#/account' : '#/login';
   const loginAction = userName ? '<button id="drawer-logout" class="drawer-link" style="color: var(--error); border: none; background: none; width: 100%; text-align: left; padding: 12px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 1rem;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg> Sair da Conta</button>' : '';
-  const isAdmin = localStorage.getItem('isAdmin') === 'true';
+  const isAdmin = profile?.role === 'admin';
 
   return `
     <div class="drawer-header" style="display: flex; justify-content: space-between; align-items: center; padding: 20px 16px; border-bottom: 1px solid rgba(200,155,60,0.2);">

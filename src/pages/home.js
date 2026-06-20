@@ -46,7 +46,7 @@ export async function renderHome(container) {
       <div id="promo-banners-wrap"></div>
 
       <!-- Categories Pills -->
-      <div id="home-categories-wrap" class="container" style="padding-top: 24px; padding-bottom: 8px;"></div>
+      <div id="home-categories-wrap" class="container hide-desktop" style="padding-top: 24px; padding-bottom: 8px;"></div>
 
       <!-- Vitrine Geral -->
       <section class="home-section container" style="padding-top: 16px;">
