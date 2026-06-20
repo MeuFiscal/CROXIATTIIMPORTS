@@ -67,6 +67,7 @@ const lazyPolicy     = () => import('./pages/policy.js').then(m => m.renderPolic
 const lazyFaq        = () => import('./pages/faq.js').then(m => m.renderFaq);
 const lazyLogin      = () => import('./pages/login.js').then(m => m.renderLogin);
 const lazyAccount    = () => import('./pages/account.js').then(m => m.renderAccount);
+const lazyResetPwd   = () => import('./pages/reset-password.js').then(m => m.renderResetPassword);
 
 const lazyAdminLogin     = () => import('./pages/admin/login.js').then(m => m.renderAdminLogin);
 const lazyAdminDash      = () => import('./pages/admin/dashboard.js').then(m => m.renderDashboard);
@@ -127,6 +128,11 @@ registerRoute('/login', withShell(async (el) => {
 
 registerRoute('/account', withShell(async (el) => {
   const fn = await lazyAccount();
+  return fn(el);
+}));
+
+registerRoute('/reset-password', withShell(async (el) => {
+  const fn = await lazyResetPwd();
   return fn(el);
 }));
 
