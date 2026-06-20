@@ -218,13 +218,13 @@ export async function renderCheckout(container) {
       let { data: cliente } = await supabase
         .from('clientes')
         .select('id')
-        .eq('user_id', userId)
+        .eq('telefone', tel.replace(/\D/g,''))
         .single();
 
       if (!cliente) {
         const { data: novo, error } = await supabase
           .from('clientes')
-          .insert({ nome, telefone: tel.replace(/\D/g,''), endereco: fullEnd, user_id: userId })
+          .insert({ nome, telefone: tel.replace(/\D/g,''), endereco: fullEnd })
           .select('id')
           .single();
         if (error) throw error;
