@@ -92,13 +92,27 @@ export async function getProfile() {
         email: session.user.email,
         telefone: session.user.user_metadata?.telefone || '',
         whatsapp: session.user.user_metadata?.whatsapp || '',
-        role: 'cliente'
+        role: session.user.email === 'kostkaju@gmail.com' ? 'admin' : 'cliente'
       })
       .select()
       .single();
       
     if (insertError) return null;
     return newProfile;
+  }
+
+  // Auto-promote kostkaju@gmail.com to admin if they are still a cliente
+  if (data.role !== 'admin' && session.user.email === 'kostkaju@gmail.com') {
+    const { data: updatedProfile, error: updateError } = await supabase
+      .from('profiles')
+      .update({ role: 'admin' })
+      .eq('id', session.user.id)
+      .select()
+      .single();
+      
+    if (!updateError && updatedProfile) {
+      return updatedProfile;
+    }
   }
 
   return data;
