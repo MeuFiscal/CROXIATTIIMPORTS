@@ -139,6 +139,14 @@ export async function renderLogin(container) {
     subtitle.textContent = 'Faça login para acessar sua conta';
   });
 
+  // Check URL params to open specific tab
+  if (window.location.hash.includes('tab=register')) {
+    loginForm.style.display = 'none';
+    recoverForm.style.display = 'none';
+    registerForm.style.display = 'flex';
+    subtitle.textContent = 'Crie sua conta para uma experiência premium';
+  }
+
   // Login Submit
   loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
