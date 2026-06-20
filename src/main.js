@@ -9,13 +9,28 @@ import { registerRoute, initRouter } from './router.js';
 import { renderHeader } from './components/header.js';
 import { renderFooter } from './components/footer.js';
 import { supabase } from './supabase.js';
+import { showToast } from './components/toast.js';
 
 supabase.auth.onAuthStateChange((event, session) => {
   if (event === 'PASSWORD_RECOVERY') {
     // Força o roteamento para a tela de redefinição de senha
-    window.location.hash = '/reset-password';
+    setTimeout(() => {
+      window.location.hash = '/reset-password';
+    }, 100);
   }
 });
+
+// Checa se há erro na URL (ex: link de recuperação expirado)
+if (window.location.hash.includes('error_description=')) {
+  const hashString = window.location.hash.slice(1).replace(/&sb=$/, '');
+  const params = new URLSearchParams(hashString);
+  const errDesc = params.get('error_description');
+  if (errDesc) {
+    setTimeout(() => {
+      showToast('Erro: ' + decodeURIComponent(errDesc).replace(/\+/g, ' '), 'error');
+    }, 1000);
+  }
+}
 
 const app = document.getElementById('app');
 

@@ -14,18 +14,39 @@ export function navigate(path) {
 }
 
 export function getParams() {
-  let hash = window.location.hash.slice(1) || '/';
-  // Supabase auth might append #access_token or &access_token
-  if (hash.includes('&access_token=')) hash = hash.split('&access_token=')[0];
-  if (hash.includes('#access_token=')) hash = hash.split('#access_token=')[0];
-  if (hash.includes('&type=recovery')) hash = hash.split('&type=recovery')[0];
+  const originalHash = window.location.hash;
+  let hash = originalHash.slice(1) || '/';
+  
+  // Se a URL contém parâmetros do Supabase (ex: erro de link expirado ou token)
+  if (hash.startsWith('error=') || hash.startsWith('access_token=') || hash.startsWith('type=')) {
+    // Isso não é uma rota de navegação, é um retorno de auth do Supabase.
+    // O Supabase vai processar o hash em background. 
+    // Para o roteador visual, forçamos o path para '/' ou '/reset-password'.
+    
+    // Se for recuperação com sucesso, o Supabase emitirá o evento PASSWORD_RECOVERY.
+    // O listener no main.js vai redirecionar para /reset-password.
+    // Por precaução, se tiver type=recovery, já preparamos a rota.
+    if (hash.includes('type=recovery')) {
+      return { path: '/reset-password', params: {} };
+    }
+    
+    // Se for erro (ex: link expirado), o ideal é ir para home (e talvez depois mostrar um toast)
+    return { path: '/', params: {} };
+  }
+
+  // Remove qualquer fragmento extra que o Supabase possa ter anexado
+  const tokenIndex = hash.indexOf('access_token=');
+  if (tokenIndex !== -1) hash = hash.substring(0, tokenIndex).replace(/[&?#]$/, '');
   
   const [path, query] = hash.split('?');
+  const finalPath = path || '/';
+
   const params = {};
   if (query) {
     new URLSearchParams(query).forEach((v, k) => { params[k] = v; });
   }
-  return { path, params };
+  
+  return { path: finalPath, params };
 }
 
 function handleRoute() {
