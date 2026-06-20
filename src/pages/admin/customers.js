@@ -97,8 +97,28 @@ async function showCustomerOrders(clienteId, nome) {
     .order('created_at', { ascending: false });
 
   const pedidos = data || [];
-  const statusLabel = { pendente: '⏳ Pendente', aceito: '✅ Aceito', entregue: '🎉 Entregue' };
-  const statusCls = { pendente: 'badge-warning', aceito: 'badge-info', entregue: 'badge-success' };
+  const statusLabel = { 
+    'recebido': '📦 Recebido', 
+    'aguardando_pagamento': '⏳ Aguardando Pagamento', 
+    'pago': '💵 Pago', 
+    'em_separacao': '🛒 Em Separação', 
+    'enviado': '🚚 Enviado', 
+    'entregue': '🎉 Entregue', 
+    'cancelado': '❌ Cancelado',
+    'pendente': '⏳ Aguardando Pagamento',
+    'aceito': '🛒 Em Separação'
+  };
+  const statusCls = { 
+    'recebido': 'badge-outline', 
+    'aguardando_pagamento': 'badge-warning', 
+    'pago': 'badge-success', 
+    'em_separacao': 'badge-info', 
+    'enviado': 'badge-info', 
+    'entregue': 'badge-success', 
+    'cancelado': 'badge-error',
+    'pendente': 'badge-warning',
+    'aceito': 'badge-info'
+  };
 
   const body = pedidos.length === 0
     ? '<div class="empty-state" style="padding:32px"><div class="icon">📋</div><p>Nenhum pedido encontrado</p></div>'
@@ -108,7 +128,18 @@ async function showCustomerOrders(clienteId, nome) {
             <span style="font-size:.8rem;color:var(--gray-400)">
               #${p.id.slice(0,8).toUpperCase()} · ${new Date(p.created_at).toLocaleDateString('pt-BR')}
             </span>
-            <span class="badge ${statusCls[p.status] || 'badge-outline'}">${statusLabel[p.status] || p.status}</span>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <select class="form-select status-select" data-id="${p.id}" style="font-size: 0.75rem; padding: 4px 8px; border-radius: 4px; border-color: var(--gray-200);">
+                <option value="recebido" ${['recebido'].includes(p.status) ? 'selected' : ''}>Recebido</option>
+                <option value="aguardando_pagamento" ${['aguardando_pagamento', 'pendente'].includes(p.status) ? 'selected' : ''}>Aguard. Pagamento</option>
+                <option value="pago" ${['pago'].includes(p.status) ? 'selected' : ''}>Pago</option>
+                <option value="em_separacao" ${['em_separacao', 'aceito'].includes(p.status) ? 'selected' : ''}>Em Separação</option>
+                <option value="enviado" ${['enviado'].includes(p.status) ? 'selected' : ''}>Enviado</option>
+                <option value="entregue" ${['entregue'].includes(p.status) ? 'selected' : ''}>Entregue</option>
+                <option value="cancelado" ${['cancelado'].includes(p.status) ? 'selected' : ''}>Cancelado</option>
+              </select>
+              <span class="badge ${statusCls[p.status] || 'badge-outline'}">${statusLabel[p.status] || p.status}</span>
+            </div>
           </div>
           <div style="font-size:.85rem;color:var(--gray-600);margin-bottom:10px">
             ${(p.pedido_itens || []).map(it => `${it.produtos?.nome} × ${it.quantidade} — ${formatCurrency(it.valor_unitario * it.quantidade)}`).join('<br>')}
@@ -121,6 +152,31 @@ async function showCustomerOrders(clienteId, nome) {
       `).join('');
 
   openModal({ title: `Pedidos de ${nome}`, body, maxWidth: '560px' });
+
+  // Add event listeners for the selects
+  setTimeout(() => {
+    const selects = document.querySelectorAll('.modal-content .status-select');
+    selects.forEach(select => {
+      select.addEventListener('change', async (e) => {
+        const id = e.target.dataset.id;
+        const newStatus = e.target.value;
+        select.disabled = true;
+        
+        const { error } = await supabase.from('pedidos').update({ status: newStatus }).eq('id', id);
+        
+        select.disabled = false;
+        
+        if (error) {
+          import('../../components/toast.js').then(({ showToast }) => showToast('Erro ao atualizar status', 'error'));
+        } else {
+          import('../../components/toast.js').then(({ showToast }) => showToast('Status atualizado!', 'success'));
+          // Reload the modal content to show new badge
+          document.querySelector('.modal-overlay')?.remove();
+          showCustomerOrders(clienteId, nome);
+        }
+      });
+    });
+  }, 100);
 }
 
 function formatPhone(tel) {

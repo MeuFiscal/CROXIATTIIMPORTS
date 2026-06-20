@@ -2,7 +2,7 @@
 // CHECKOUT PAGE — Finalização do pedido
 // ======================================================
 import { getCart, getCartTotal, clearCart, saveOrderSession } from '../store.js';
-import { supabase } from '../supabase.js';
+import { supabase, getCustomerSession, getProfile } from '../supabase.js';
 import { navigate } from '../router.js';
 import { formatCurrency } from '../components/productCard.js';
 import { showToast } from '../components/toast.js';
@@ -100,7 +100,11 @@ export async function renderCheckout(container) {
     btn.innerHTML = '<span class="loader-ring" style="width:20px;height:20px;border-width:2px"></span> Processando...';
 
     try {
-      // Upsert cliente
+      // Check session
+      const session = await getCustomerSession();
+      const userId = session ? session.user.id : null;
+
+      // Upsert cliente (still used for old compatibility / reference)
       let { data: cliente } = await supabase
         .from('clientes')
         .select('id')
@@ -110,13 +114,15 @@ export async function renderCheckout(container) {
       if (!cliente) {
         const { data: novo, error } = await supabase
           .from('clientes')
-          .insert({ nome, telefone: tel.replace(/\D/g,''), endereco: end })
+          .insert({ nome, telefone: tel.replace(/\D/g,''), endereco: end, user_id: userId })
           .select('id')
           .single();
         if (error) throw error;
         cliente = novo;
       } else {
-        await supabase.from('clientes').update({ endereco: end }).eq('id', cliente.id);
+        const updateData = { endereco: end };
+        if (userId) updateData.user_id = userId;
+        await supabase.from('clientes').update(updateData).eq('id', cliente.id);
       }
 
       // Criar pedido — detecta status com base nos itens
@@ -124,9 +130,12 @@ export async function renderCheckout(container) {
       const hasMixed = cart.some(i => (i.qty_encomenda || 0) > 0) && cart.some(i => (i.qty_estoque || i.quantidade) > 0);
       const initialStatus = hasEncomendaOnly ? 'encomenda' : 'pendente';
 
+      const pedidoData = { cliente_id: cliente.id, valor_total: total, status: initialStatus };
+      if (userId) pedidoData.user_id = userId;
+
       const { data: pedido, error: pedErr } = await supabase
         .from('pedidos')
-        .insert({ cliente_id: cliente.id, valor_total: total, status: initialStatus })
+        .insert(pedidoData)
         .select('id')
         .single();
       if (pedErr) throw pedErr;

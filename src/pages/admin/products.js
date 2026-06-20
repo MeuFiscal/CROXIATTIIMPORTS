@@ -283,10 +283,12 @@ async function openProductForm(produto, onSave) {
       saveBtn.innerHTML = '<span class="loader-ring" style="width:16px;height:16px;border-width:2px"></span>';
 
     let imgUrls = {
-      1: produto?.imagem_url || null
+      1: produto?.imagem_url || null,
+      2: produto?.imagem_url_2 || null,
+      3: produto?.imagem_url_3 || null
     };
 
-    for (let i of [1]) {
+    for (let i of [1, 2, 3]) {
       if (imgState[i].croppedBlob) {
         const fileExt = imgState[i].croppedBlob.name.split('.').pop();
         const fileName = `produto_${i}_${Date.now()}.${fileExt}`;
@@ -317,6 +319,8 @@ async function openProductForm(produto, onSave) {
       apenas_encomenda: document.getElementById('p-encomenda').checked,
       categoria_id: catVal ? catVal : null,
       imagem_url: imgUrls[1],
+      imagem_url_2: imgUrls[2],
+      imagem_url_3: imgUrls[3],
       updated_at: new Date().toISOString()
     };
 

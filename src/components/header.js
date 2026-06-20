@@ -25,6 +25,15 @@ export function renderHeader(app) {
   headerElement.innerHTML = `
     <div class="container header-inner">
       
+      <!-- Hamburger Menu (mobile only) -->
+      <button class="header-hamburger hide-desktop" id="header-menu-btn" aria-label="Menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+
       <!-- Logo na Esquerda -->
       <a href="#/" class="header-logo" id="logo-home">
         <img src="/logo.png" alt="Croxiatti Imports" />
@@ -45,8 +54,10 @@ export function renderHeader(app) {
         <a href="#/my-orders" class="header-nav-link hide-mobile" id="header-orders-btn">Meus Pedidos</a>
         <a href="#/admin" class="header-nav-link hide-mobile">Painel Admin</a>
         
-        <button class="header-btn" id="header-fav-btn" aria-label="Favoritos" title="Favoritos">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+        <button class="header-btn hide-mobile" id="header-fav-btn" aria-label="Favoritos" title="Favoritos">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+          </svg>
         </button>
         <button class="header-btn" id="header-cart-btn" aria-label="Carrinho" title="Carrinho">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
@@ -55,8 +66,8 @@ export function renderHeader(app) {
       </div>
     </div>
 
-    <!-- Barra de Categorias Premium -->
-    <div class="header-categories">
+    <!-- Barra de Categorias Premium (desktop only) -->
+    <div class="header-categories hide-mobile">
       <div class="container categories-inner" id="header-categories-inner">
         <!-- Loaded dynamically -->
       </div>
@@ -64,6 +75,12 @@ export function renderHeader(app) {
   `;
 
   app.prepend(headerElement);
+
+  // Hamburger → open drawer
+  headerElement.querySelector('#header-menu-btn')?.addEventListener('click', async () => {
+    const { openDrawer } = await import('./drawer.js');
+    openDrawer();
+  });
 
   // Load categories
   supabase.from('categorias').select('id, nome').order('ordem', { ascending: true })
@@ -111,7 +128,7 @@ export function renderHeader(app) {
   headerElement.querySelector('#header-cart-btn').addEventListener('click', () => navigate('/cart'));
 
   // Favorites button
-  headerElement.querySelector('#header-fav-btn').addEventListener('click', () => navigate('/favorites'));
+  headerElement.querySelector('#header-fav-btn')?.addEventListener('click', () => navigate('/favorites'));
 
   // Meus Pedidos button (desktop)
   headerElement.querySelector('#header-orders-btn')?.addEventListener('click', (e) => { e.preventDefault(); navigate('/my-orders'); });
@@ -197,6 +214,6 @@ async function runSearch(query) {
 }
 
 export function resetHeader() {
-  headerRendered = false;
+  headerElement = null;
   document.getElementById('app-header')?.remove();
 }

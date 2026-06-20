@@ -20,7 +20,8 @@ const NAV = [
 
 export async function requireAdmin() {
   const session = await getAdminSession();
-  if (!session) { navigate('/admin'); return false; }
+  const isAdmin = localStorage.getItem('isAdmin') === 'true';
+  if (!session || !isAdmin) { navigate('/admin'); return false; }
   return true;
 }
 
@@ -113,6 +114,7 @@ export function renderAdminLayout(container, title, renderContent) {
   });
 
   container.querySelector('#sidebar-logout-btn').addEventListener('click', async () => {
+    localStorage.removeItem('isAdmin');
     await signOutAdmin();
     document.body.style.padding = '';
     navigate('/admin');

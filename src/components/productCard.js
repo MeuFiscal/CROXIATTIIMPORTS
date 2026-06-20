@@ -340,8 +340,7 @@ export function createProductCard(produto) {
 }
 
 export function createSkeletonCards(count = 8) {
-  const grid = document.createElement('div');
-  grid.className = 'product-grid';
+  const fragment = document.createDocumentFragment();
   for (let i = 0; i < count; i++) {
     const card = document.createElement('div');
     card.className = 'product-card loading';
@@ -353,7 +352,7 @@ export function createSkeletonCards(count = 8) {
         <div class="card-price skeleton" style="height:20px;width:50%">&nbsp;</div>
       </div>
     `;
-    grid.appendChild(card);
+    fragment.appendChild(card);
   }
-  return grid;
+  return fragment;
 }

@@ -70,6 +70,8 @@ const lazyCheckout   = () => import('./pages/checkout.js').then(m => m.renderChe
 const lazyMyOrders   = () => import('./pages/myOrders.js').then(m => m.renderMyOrders);
 const lazyPolicy     = () => import('./pages/policy.js').then(m => m.renderPolicy);
 const lazyFaq        = () => import('./pages/faq.js').then(m => m.renderFaq);
+const lazyLogin      = () => import('./pages/login.js').then(m => m.renderLogin);
+const lazyAccount    = () => import('./pages/account.js').then(m => m.renderAccount);
 
 const lazyAdminLogin     = () => import('./pages/admin/login.js').then(m => m.renderAdminLogin);
 const lazyAdminDash      = () => import('./pages/admin/dashboard.js').then(m => m.renderDashboard);
@@ -120,6 +122,16 @@ registerRoute('/policy', withShell(async (el) => {
 
 registerRoute('/faq', withShell(async (el) => {
   const fn = await lazyFaq();
+  return fn(el);
+}));
+
+registerRoute('/login', withShell(async (el) => {
+  const fn = await lazyLogin();
+  return fn(el);
+}));
+
+registerRoute('/account', withShell(async (el) => {
+  const fn = await lazyAccount();
   return fn(el);
 }));
 

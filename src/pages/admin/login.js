@@ -70,6 +70,7 @@ export async function renderAdminLogin(container) {
       return;
     }
 
+    localStorage.setItem('isAdmin', 'true');
     document.body.style.padding = '';
     navigate('/admin/dashboard');
   });
