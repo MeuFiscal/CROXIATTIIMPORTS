@@ -8,6 +8,14 @@ import './css/components.css';
 import { registerRoute, initRouter } from './router.js';
 import { renderHeader } from './components/header.js';
 import { renderFooter } from './components/footer.js';
+import { supabase } from './supabase.js';
+
+supabase.auth.onAuthStateChange((event, session) => {
+  if (event === 'PASSWORD_RECOVERY') {
+    // Força o roteamento para a tela de redefinição de senha
+    window.location.hash = '/reset-password';
+  }
+});
 
 const app = document.getElementById('app');
 

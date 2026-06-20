@@ -14,7 +14,12 @@ export function navigate(path) {
 }
 
 export function getParams() {
-  const hash = window.location.hash.slice(1) || '/';
+  let hash = window.location.hash.slice(1) || '/';
+  // Supabase auth might append #access_token or &access_token
+  if (hash.includes('&access_token=')) hash = hash.split('&access_token=')[0];
+  if (hash.includes('#access_token=')) hash = hash.split('#access_token=')[0];
+  if (hash.includes('&type=recovery')) hash = hash.split('&type=recovery')[0];
+  
   const [path, query] = hash.split('?');
   const params = {};
   if (query) {
