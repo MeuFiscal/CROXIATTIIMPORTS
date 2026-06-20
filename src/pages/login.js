@@ -35,7 +35,12 @@ export async function renderLogin(container) {
             <label style="font-size: 0.85rem; font-weight: 500; color: var(--gray-700);">Senha</label>
             <a href="#" id="toggle-recover" style="font-size: 0.75rem; color: var(--gold); text-decoration: none;">Esqueceu a senha?</a>
           </div>
-          <input type="password" id="login-password" required style="width: 100%; padding: 12px 16px; border: 1.5px solid var(--gray-200); border-radius: var(--radius-md); font-size: 1rem; transition: border-color 0.2s;" />
+          <div style="position: relative;">
+            <input type="password" id="login-password" required style="width: 100%; padding: 12px 40px 12px 16px; border: 1.5px solid var(--gray-200); border-radius: var(--radius-md); font-size: 1rem; transition: border-color 0.2s;" />
+            <button type="button" class="toggle-pwd-btn" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--gray-400); display: flex; align-items: center; justify-content: center; padding: 4px;">
+              <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </button>
+          </div>
         </div>
         <button type="submit" id="btn-login-submit" class="btn btn-primary btn-lg" style="margin-top: 8px; font-weight: 600; letter-spacing: 0.05em;">ENTRAR</button>
         <div style="margin-top: 16px; font-size: 0.9rem; color: var(--gray-500);">
@@ -76,11 +81,21 @@ export async function renderLogin(container) {
         </div>
         <div class="form-group" style="text-align: left;">
           <label style="display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 6px; color: var(--gray-700);">Senha</label>
-          <input type="password" id="reg-password" required minlength="6" style="width: 100%; padding: 12px 16px; border: 1.5px solid var(--gray-200); border-radius: var(--radius-md); font-size: 1rem;" />
+          <div style="position: relative;">
+            <input type="password" id="reg-password" required minlength="6" style="width: 100%; padding: 12px 40px 12px 16px; border: 1.5px solid var(--gray-200); border-radius: var(--radius-md); font-size: 1rem;" />
+            <button type="button" class="toggle-pwd-btn" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--gray-400); display: flex; align-items: center; justify-content: center; padding: 4px;">
+              <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </button>
+          </div>
         </div>
         <div class="form-group" style="text-align: left;">
           <label style="display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 6px; color: var(--gray-700);">Confirmar Senha</label>
-          <input type="password" id="reg-password-confirm" required minlength="6" style="width: 100%; padding: 12px 16px; border: 1.5px solid var(--gray-200); border-radius: var(--radius-md); font-size: 1rem;" />
+          <div style="position: relative;">
+            <input type="password" id="reg-password-confirm" required minlength="6" style="width: 100%; padding: 12px 40px 12px 16px; border: 1.5px solid var(--gray-200); border-radius: var(--radius-md); font-size: 1rem;" />
+            <button type="button" class="toggle-pwd-btn" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--gray-400); display: flex; align-items: center; justify-content: center; padding: 4px;">
+              <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </button>
+          </div>
         </div>
         <button type="submit" id="btn-reg-submit" class="btn btn-primary btn-lg" style="margin-top: 8px; font-weight: 600; letter-spacing: 0.05em;">CRIAR CONTA</button>
         <div style="margin-top: 16px; font-size: 0.9rem; color: var(--gray-500);">
@@ -146,6 +161,20 @@ export async function renderLogin(container) {
     registerForm.style.display = 'flex';
     subtitle.textContent = 'Crie sua conta para uma experiência premium';
   }
+
+  // Toggle password visibility
+  page.querySelectorAll('.toggle-pwd-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const input = btn.previousElementSibling;
+      if (input.type === 'password') {
+        input.type = 'text';
+        btn.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>';
+      } else {
+        input.type = 'password';
+        btn.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
+      }
+    });
+  });
 
   // Login Submit
   loginForm.addEventListener('submit', async (e) => {
