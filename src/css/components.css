@@ -623,7 +623,9 @@
 }
 .promo-banner-img {
   width: 100%;
-  height: auto;
+  height: 250px;
+  object-fit: cover;
+  object-position: center;
   display: block;
   transition: transform 0.4s ease;
 }
@@ -632,6 +634,7 @@
 }
 @media (max-width: 768px) {
   .promo-banners-section { padding: 12px 12px 0; gap: 6px; }
+  .promo-banner-img { height: auto; }
 }
 
 /* Section */
